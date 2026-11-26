@@ -377,3 +377,8 @@ body {
 }
 .scroll-colophon-btn:focus-visible { outline: none; }
 .scroll-colophon-btn:active { transform: scale(0.96); }
+
+/* v51：全局按钮零延迟触控响应（消除移动端 300ms 延迟） */
+button {
+  touch-action: manipulation;
+}

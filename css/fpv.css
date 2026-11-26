@@ -199,7 +199,7 @@
 }
 .app-frame.desktop-mode .settlement-panel { top: 14px; width: min(400px, 46%); }
 .settlement-panel.visible {
-  opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; cursor: pointer;
+  opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: none;
 }
 .settlement-head {
   display: flex; align-items: center; gap: 6px; margin-bottom: 6px;

@@ -240,7 +240,7 @@ function closeModalWithMotion(el) {
 // 全局按钮水墨晕染涟漪动效
 document.addEventListener('pointerdown', (e) => {
   const btn = e.target.closest('button');
-  if (!btn || btn.disabled) return;
+  if (!btn || btn.disabled || btn.classList.contains('board-prop-btn') || btn.classList.contains('art-hotspot')) return;
   const pos = getComputedStyle(btn).position;
   if (pos === 'static') return;
   const rect = btn.getBoundingClientRect();

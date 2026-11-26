@@ -54,8 +54,9 @@ export function initOpeningCutscene(onStartGame) {
     size: 4.5 + (i % 4) * 1.6
   }));
 
-  // 2) 幕二：高密度纯文字李白诗句楼影 + 垂柳字帘 + 双燕
-  let pavilionGlyphs = [];
+  // 2) 幕二：高密度纯文字李白诗句楼影（离屏一次预渲染，零卡顿） + 垂柳字帘 + 双燕
+  const pavilionCache = document.createElement('canvas');
+  const pavilionCacheCtx = pavilionCache.getContext('2d');
   let willowStrands = [];
   const swallows = [
     { x: -0.1, y: 0.28, vx: 0.15, vy: -0.025, scale: 1.0, phase: 0 },
@@ -73,7 +74,6 @@ export function initOpeningCutscene(onStartGame) {
   }));
 
   function buildLibaiPavilionGlyphs() {
-    pavilionGlyphs = [];
     willowStrands = [];
     const w = cw, h = ch;
 
@@ -126,9 +126,17 @@ export function initOpeningCutscene(onStartGame) {
     octx.fillRect(cx - span * 0.30, baseY - span * 0.02, span * 0.60, span * 0.07);
 
     const imgData = octx.getImageData(0, 0, w, h).data;
-    const stepX = Math.max(8, Math.round(span / 36));
-    const stepY = Math.max(9, Math.round(span / 33));
+    const stepX = Math.max(9, Math.round(span / 34));
+    const stepY = Math.max(10, Math.round(span / 31));
     let charPtr = 0;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    pavilionCache.width = Math.max(1, Math.round(w * dpr));
+    pavilionCache.height = Math.max(1, Math.round(h * dpr));
+    pavilionCacheCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    pavilionCacheCtx.clearRect(0, 0, w, h);
+    pavilionCacheCtx.textAlign = 'center';
+    pavilionCacheCtx.textBaseline = 'middle';
 
     for (let y = Math.floor(baseY - span * 0.74); y < Math.ceil(baseY + span * 0.08); y += stepY) {
       if (y < 0 || y >= h) continue;
@@ -139,14 +147,9 @@ export function initOpeningCutscene(onStartGame) {
           const chChar = LIBAI_POEM_STREAM[charPtr % LIBAI_POEM_STREAM.length];
           charPtr += 1;
           const isEave = y < baseY - span * 0.30 || (y > baseY - span * 0.16 && y < baseY - span * 0.01);
-          pavilionGlyphs.push({
-            x,
-            y,
-            ch: chChar,
-            size: isEave ? (stepX + 1.5) : (stepX - 0.5),
-            color: isEave ? '#22334d' : '#4a6285',
-            delay: ((x - (cx - span * 0.52)) / span) * 0.45 + ((y - (baseY - span * 0.74)) / span) * 0.35
-          });
+          pavilionCacheCtx.fillStyle = isEave ? '#22334d' : '#4a6285';
+          pavilionCacheCtx.font = `700 ${(isEave ? stepX + 1.5 : stepX - 0.5).toFixed(1)}px "Noto Serif SC", "Songti SC", serif`;
+          pavilionCacheCtx.fillText(chChar, x, y);
         }
       }
     }
@@ -238,19 +241,18 @@ export function initOpeningCutscene(onStartGame) {
         ctx.restore();
       }
     } else if (phase === 1) {
-      // 幕二：高密度纯文字李白诗句构筑宋楼飞檐 + 竖排垂柳字帘 + 双燕掠檐
-      const revealT = Math.min(1.4, elapsed * 1.15);
+      // 幕二：高密度纯文字李白诗句构筑宋楼飞檐（单次 drawImage 流畅揭示） + 竖排垂柳字帘 + 双燕掠檐
+      const revealP = Math.max(0, Math.min(1, elapsed * 1.15));
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, revealP * 1.25);
+      ctx.beginPath();
+      ctx.rect(0, 0, cw, ch * (0.18 + revealP * 0.6));
+      ctx.clip();
+      ctx.drawImage(pavilionCache, 0, 0, cw, ch);
+      ctx.restore();
       ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      for (const g of pavilionGlyphs) {
-        const local = Math.max(0, Math.min(1, (revealT - g.delay) * 2.4));
-        if (local <= 0) continue;
-        ctx.globalAlpha = local * 0.94;
-        ctx.fillStyle = g.color;
-        ctx.font = `700 ${g.size.toFixed(1)}px "Noto Serif SC", "Songti SC", serif`;
-        ctx.fillText(g.ch, g.x, g.y - (1 - local) * 6);
-      }
 
       // 竖排李白诗句垂柳随风轻摆
       for (const st of willowStrands) {
@@ -381,6 +383,7 @@ export function initOpeningCutscene(onStartGame) {
       if (ctaBox) ctaBox.classList.remove('visible');
       if (captionBox) captionBox.classList.remove('fade-out');
       if (btnSkip) btnSkip.style.display = '';
+      if (!rafId && !reduceMotion) rafId = requestAnimationFrame(renderFrame);
       playPhase(0);
     });
   }
@@ -394,7 +397,7 @@ export function initOpeningCutscene(onStartGame) {
         screen.classList.add('hidden');
         if (rafId) cancelAnimationFrame(rafId);
         onStartGame();
-      }, reduceMotion ? 60 : 520);
+      }, reduceMotion ? 40 : 220);
     });
   }
 

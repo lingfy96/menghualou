@@ -447,7 +447,7 @@
 .avg-choice-btn.poem-eye {
   border-left-color: var(--mint-deep);
 }
-.avg-choice-btn.poem-eye /* 客官档案与打烊复盘叙述 */
+/* 客官档案与打烊复盘叙述 */
 .profile-sheet { text-align: left; }
 .profile-hero {
   display: flex; align-items: center; gap: 14px;
@@ -1906,4 +1906,11 @@
 }
 .scroll-rod-frame .book-sheet.is-scrollable::after {
   opacity: 1;
+}
+
+/* v51：关闭过渡期彻底放行点击，绝不拦截下层按键 */
+.avg-overlay.closing,
+.modal-overlay.closing,
+.diegetic-overlay.closing {
+  pointer-events: none !important;
 }
