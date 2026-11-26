@@ -36,7 +36,6 @@
   position: absolute;
   inset: 0;
   background: radial-gradient(circle at 50% 30%, rgba(248, 244, 234, 0.42), rgba(42, 36, 30, 0.8) 85%);
-  backdrop-filter: blur(6px);
 }
 
 .avg-stage {
@@ -140,18 +139,6 @@
   border-radius: 2px 2px 0 0;
   min-width: 148px;
 }
-.nameplate-seal {
-  width: 18px;
-  height: 18px;
-  border-radius: 2px;
-  background: var(--cinnabar);
-  color: #faf4e8;
-  font-family: var(--font-brush);
-  font-size: 0.76rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
 .avg-nameplate strong { font-size: 1rem; font-weight: 900; letter-spacing: 2px; font-family: var(--font-serif); }
 .avg-nameplate span { font-size: 0.75rem; opacity: 0.86; }
 
@@ -179,7 +166,6 @@
   justify-content: center;
   padding: 18px 14px;
   background: rgba(42, 36, 30, 0.66);
-  backdrop-filter: blur(6px);
 }
 .modal-overlay.open {
   display: flex;
@@ -284,7 +270,7 @@
   height: 22px;
   z-index: 4;
   pointer-events: none;
-  background: url('../assets/ui/scroll_rod.png') center / 100% 210% no-repeat;
+  background: url('../assets/ui/scroll_rod.webp') center / 100% 210% no-repeat;
   filter: drop-shadow(0 3px 6px rgba(42, 30, 20, 0.30));
 }
 .scroll-rod-frame::before { top: -8px; }
@@ -413,20 +399,6 @@
   display: flex; flex-direction: column; gap: 6px;
   animation: scrollUnrollIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.avg-choice-top {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-}
-.avg-choice-top strong { margin-bottom: 0; font-size: 0.88rem; }
-.avg-choice-tag {
-  flex-shrink: 0; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;
-  padding: 1px 6px; border-radius: 2px;
-  border: 1px solid rgba(154, 140, 118, 0.5);
-  color: var(--ink-muted); background: rgba(235, 229, 214, 0.6);
-}
-.avg-choice-attrs {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
-}
-
 .avg-choice-btn:disabled {
   opacity: 0.62;
   cursor: not-allowed;
@@ -473,12 +445,6 @@
 .avg-choice-btn.poem-eye {
   border-left-color: var(--mint-deep);
 }
-.avg-choice-btn.poem-eye .avg-choice-tag {
-  color: var(--mint-deep);
-  border-color: rgba(58, 117, 104, 0.45);
-  background: rgba(58, 117, 104, 0.1);
-}
-
 /* 客官档案与打烊复盘叙述 */
 .profile-sheet { text-align: left; }
 .profile-hero {
@@ -691,12 +657,6 @@
   letter-spacing: 0.02em;
   color: var(--ink-text);
 }
-.avg-dialogue-text em.emotion-em {
-  font-style: normal;
-  font-weight: 800;
-  color: #1c1610;
-}
-
 /* 选项区（紧凑三层平行模板 + 宋画矿物语义色 + 四态响应 ≤100ms） */
 .avg-choices {
   gap: 10px;
@@ -840,7 +800,6 @@
   position: relative;
   border: none;
   border-radius: 0;
-  background: url('../assets/ui/torn_paper_card.png') center / 100% 100% no-repeat;
   box-shadow: none;
   filter: drop-shadow(0 8px 20px rgba(26, 20, 14, 0.32));
   overflow: visible;
@@ -858,7 +817,6 @@
   gap: 6px;
   padding: 6px 26px 6px 18px;
   min-height: 32px;
-  background: url('../assets/ui/ink_gold_stroke.png') left center / 100% 100% no-repeat;
   color: #faf4e8;
   filter: drop-shadow(0 3px 6px rgba(22, 16, 10, 0.36));
 }
@@ -879,7 +837,6 @@
   border-radius: 999px;
   background: rgba(34, 28, 22, 0.62);
   color: #f7efe0;
-  backdrop-filter: blur(4px);
 }
 .avg-collapse-btn:hover {
   color: #f5d89a;
@@ -900,7 +857,6 @@
   border-left: none;
   border-radius: 0;
   padding: 13px 20px 13px 22px;
-  background: url('../assets/ui/torn_paper_card.png') center / 100% 100% no-repeat;
   box-shadow: none;
   filter: drop-shadow(0 5px 14px rgba(26, 20, 14, 0.28));
   transition: transform 95ms ease, filter 120ms ease;
@@ -976,7 +932,6 @@
   align-items: center;
   justify-content: center;
   padding: 9px 34px;
-  background: url('../assets/ui/ink_gold_stroke.png') center / 100% 100% no-repeat;
   font-family: var(--font-brush);
   font-size: 1.38rem;
   letter-spacing: 3px;
@@ -1136,7 +1091,6 @@
   width: 100%;
   max-width: 152px;
   padding: 10px 8px 11px;
-  background: url('../assets/ui/torn_paper_card.png') center / 100% 100% no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1295,7 +1249,6 @@
   appearance: none;
   cursor: pointer;
   border: none;
-  background: url('../assets/ui/torn_paper_card.png') center / 100% 100% no-repeat;
   padding: 18px 14px 16px;
   min-height: 142px;
   display: flex;
@@ -1426,7 +1379,6 @@
 
 /* 2. 叙述层（角色台词）：玉白青边水雾大笔触 + 石青鎏金飞白名牌（零发黄、零做旧） */
 .avg-dialogue-panel {
-  background: url('../assets/ui/brush_dialogue_wash.png') center / 100% 100% no-repeat;
   padding: 20px 26px 18px;
   filter: drop-shadow(0 8px 22px rgba(18, 44, 48, 0.26));
 }
@@ -1436,7 +1388,6 @@
 .avg-nameplate {
   padding: 7px 32px 7px 20px;
   min-height: 36px;
-  background: url('../assets/ui/brush_nameplate_jade.png') left center / 100% 100% no-repeat;
   filter: drop-shadow(0 4px 10px rgba(16, 44, 46, 0.34));
 }
 .avg-nameplate strong {
@@ -1452,7 +1403,6 @@
   background: rgba(24, 58, 60, 0.68);
   border: 1px solid rgba(190, 236, 224, 0.42);
   color: #f2fbf8;
-  backdrop-filter: blur(6px);
 }
 .avg-collapse-btn:hover {
   background: rgba(32, 76, 74, 0.84);
@@ -1472,7 +1422,6 @@
 .avg-choice-btn {
   padding: 13px 26px 13px 28px;
   min-height: 58px;
-  background: url('../assets/ui/brush_choice_celadon.png') center / 100% 100% no-repeat;
   filter: drop-shadow(0 6px 16px rgba(16, 44, 46, 0.28));
   transition: transform 110ms cubic-bezier(0.22, 1, 0.36, 1), filter 130ms ease;
 }
@@ -1522,7 +1471,6 @@
 
 /* 4. 檐下三灯 & 青荷折扇：同步切换石青鎏金标题笔触与清透玉白载体 */
 .diegetic-brush-title {
-  background: url('../assets/ui/brush_nameplate_jade.png') center / 100% 100% no-repeat;
   padding: 10px 38px;
   color: #ffffff;
   text-shadow: 0 1px 5px rgba(12, 34, 38, 0.72);
@@ -1551,7 +1499,6 @@
 
 /* 青荷折扇双契：换为清透玉白青边水雾大笔触，与石绿描金折扇浑然一体 */
 .intel-contract-slip {
-  background: url('../assets/ui/brush_dialogue_wash.png') center / 100% 100% no-repeat;
   padding: 20px 18px 18px;
   filter: drop-shadow(0 8px 20px rgba(16, 44, 48, 0.28));
 }
@@ -1572,24 +1519,24 @@
 
 /* 1. 叙述层（台词）与商情双契：无颗粒平笔琉璃玉白藏色底图 */
 .avg-dialogue-panel {
-  background: url('../assets/ui/silk_dialogue_stroke.png') center / 100% 100% no-repeat;
+  background: url('../assets/ui/silk_dialogue_stroke.webp') center / 100% 100% no-repeat;
   padding: 22px 26px 18px;
   filter: drop-shadow(0 8px 22px rgba(20, 48, 56, 0.22));
 }
 .intel-contract-slip {
-  background: url('../assets/ui/silk_dialogue_stroke.png') center / 100% 100% no-repeat;
+  background: url('../assets/ui/silk_dialogue_stroke.webp') center / 100% 100% no-repeat;
   padding: 22px 20px 18px;
   filter: drop-shadow(0 8px 20px rgba(20, 48, 56, 0.24));
 }
 
 /* 2. 名牌与三大热点标题：平笔湖蓝石青鎏金藏色短刷 */
 .avg-nameplate {
-  background: url('../assets/ui/silk_nameplate_stroke.png') left center / 100% 100% no-repeat;
+  background: url('../assets/ui/silk_nameplate_stroke.webp') left center / 100% 100% no-repeat;
   padding: 7px 30px 7px 20px;
   filter: drop-shadow(0 4px 10px rgba(18, 48, 56, 0.28));
 }
 .diegetic-brush-title {
-  background: url('../assets/ui/silk_nameplate_stroke.png') center / 100% 100% no-repeat;
+  background: url('../assets/ui/silk_nameplate_stroke.webp') center / 100% 100% no-repeat;
   padding: 10px 40px;
   filter: drop-shadow(0 5px 14px rgba(18, 48, 56, 0.3));
 }
@@ -1601,7 +1548,7 @@
 .avg-choice-btn {
   padding: 13px 28px 13px 26px;
   min-height: 60px;
-  background: url('../assets/ui/silk_choice_stroke.png') center / 100% 100% no-repeat;
+  background: url('../assets/ui/silk_choice_stroke.webp') center / 100% 100% no-repeat;
   filter: drop-shadow(0 6px 16px rgba(18, 46, 54, 0.24));
 }
 .avg-choice-btn .choice-row-1 strong {
@@ -1955,4 +1902,11 @@
 }
 .scroll-rod-frame .book-sheet.is-scrollable::after {
   opacity: 1;
+}
+
+/* v51：关闭过渡期彻底放行点击，绝不拦截下层按键 */
+.avg-overlay.closing,
+.modal-overlay.closing,
+.diegetic-overlay.closing {
+  pointer-events: none !important;
 }

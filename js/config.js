@@ -19,13 +19,13 @@ export const BOARD_RECIPES = {
   osmanthus_cake: {
     name: '桂花糕',
     semanticSteps: ['筛粉', '涂蜜', '撒桂', '出品'],
-    img: './assets/dishes/osmanthus_cake.png',
+    img: './assets/dishes/osmanthus_cake.webp',
     price: 34,
     props: [
-      { id: 'flour', img: './assets/props/flour.png', label: '青瓷糯米粉碗', x: 16, y: 26 },
-      { id: 'honey', img: './assets/props/honey.png', label: '琥珀桂花蜜罐', x: 84, y: 26 },
-      { id: 'petal', img: './assets/props/petal.png', label: '淡紫金桂碟', x: 16, y: 74 },
-      { id: 'knife', img: './assets/props/knife.png', label: '木柄青银菜刀', x: 84, y: 74 }
+      { id: 'flour', img: './assets/props/flour.webp', label: '青瓷糯米粉碗', x: 16, y: 26 },
+      { id: 'honey', img: './assets/props/honey.webp', label: '琥珀桂花蜜罐', x: 84, y: 26 },
+      { id: 'petal', img: './assets/props/petal.webp', label: '淡紫金桂碟', x: 16, y: 74 },
+      { id: 'knife', img: './assets/props/knife.webp', label: '木柄青银菜刀', x: 84, y: 74 }
     ],
     steps: [
 { stageIndex: 0, type: 'tap', propId: 'flour', tag: '第一步 · 筛粉', icon: '👆', hint: '轻点下方高亮的【青瓷糯米粉碗】，将糯米粉筛上木案', poetic: '细腻蓬松的糯米粉落上温润木案，泛起浅蓝柔光。' },
@@ -41,13 +41,13 @@ export const BOARD_RECIPES = {
   meat: {
     name: '炙羊肉',
     semanticSteps: ['摆串', '刷油', '撒料', '出品'],
-    img: './assets/dishes/meat.png',
+    img: './assets/dishes/meat.webp',
     price: 40,
     props: [
-      { id: 'raw_meat', img: './assets/props/raw_meat.png', label: '鲜羊排盘', x: 16, y: 26 },
-      { id: 'brush', img: './assets/props/brush.png', label: '竹柄油刷', x: 84, y: 26 },
-      { id: 'spice', img: './assets/props/spice.png', label: '香草孜然碟', x: 16, y: 74 },
-      { id: 'tongs', img: './assets/props/tongs.png', label: '竹夹素木盘', x: 84, y: 74 }
+      { id: 'raw_meat', img: './assets/props/raw_meat.webp', label: '鲜羊排盘', x: 16, y: 26 },
+      { id: 'brush', img: './assets/props/brush.webp', label: '竹柄油刷', x: 84, y: 26 },
+      { id: 'spice', img: './assets/props/spice.webp', label: '香草孜然碟', x: 16, y: 74 },
+      { id: 'tongs', img: './assets/props/tongs.webp', label: '竹夹素木盘', x: 84, y: 74 }
     ],
     steps: [
 { stageIndex: 0, type: 'tap', propId: 'raw_meat', tag: '第一步 · 摆串', icon: '👆', hint: '轻点下方高亮的【鲜羊排盘】，将三串粉嫩羊排铺上木案', poetic: '鲜嫩粉润的羊排串排开在木案上，纹理清晰。' },
@@ -61,13 +61,13 @@ export const BOARD_RECIPES = {
   plum_wine: {
     name: '青梅酿',
     semanticSteps: ['投梅', '注酒', '搅匀', '出品'],
-    img: './assets/dishes/plum_wine.png',
+    img: './assets/dishes/plum_wine.webp',
     price: 34,
     props: [
-      { id: 'plums', img: './assets/props/plums.png', label: '鲜青梅碟', x: 16, y: 26 },
-      { id: 'plum_jug', img: './assets/props/plum_jug.png', label: '琥珀酒壶', x: 84, y: 26 },
-      { id: 'sugar', img: './assets/props/sugar.png', label: '晶莹冰糖碟', x: 16, y: 74 },
-      { id: 'spoon', img: './assets/props/spoon.png', label: '长柄木匙', x: 84, y: 74 }
+      { id: 'plums', img: './assets/props/plums.webp', label: '鲜青梅碟', x: 16, y: 26 },
+      { id: 'plum_jug', img: './assets/props/plum_jug.webp', label: '琥珀酒壶', x: 84, y: 26 },
+      { id: 'sugar', img: './assets/props/sugar.webp', label: '晶莹冰糖碟', x: 16, y: 74 },
+      { id: 'spoon', img: './assets/props/spoon.webp', label: '长柄木匙', x: 84, y: 74 }
     ],
     steps: [
 { stageIndex: 0, type: 'tap', propId: 'plums', tag: '第一步 · 取青梅', icon: '👆', hint: '轻点下方高亮的【鲜青梅碟】，准备将青梅投入琉璃坛', poetic: '带着晨露的脆嫩青梅已备妥，琉璃坛泛起欧泊柔光。' },
@@ -82,13 +82,13 @@ export const BOARD_RECIPES = {
   wine: {
     name: '温酒',
     semanticSteps: ['注酒', '拨炭', '扇风', '出品'],
-    img: './assets/dishes/wine.png',
+    img: './assets/dishes/wine.webp',
     price: 30,
     props: [
-      { id: 'wine_jar', img: './assets/props/wine_jar.png', label: '清酒坛', x: 16, y: 26 },
-      { id: 'stove', img: './assets/props/stove.png', label: '小泥炉', x: 84, y: 26 },
-      { id: 'fan', img: './assets/props/fan.png', label: '竹编蒲扇', x: 66, y: 80 },
-      { id: 'cup', img: './assets/props/cup.png', label: '温酒瓷杯', x: 84, y: 80 }
+      { id: 'wine_jar', img: './assets/props/wine_jar.webp', label: '清酒坛', x: 16, y: 26 },
+      { id: 'stove', img: './assets/props/stove.webp', label: '小泥炉', x: 84, y: 26 },
+      { id: 'fan', img: './assets/props/fan.webp', label: '竹编蒲扇', x: 66, y: 80 },
+      { id: 'cup', img: './assets/props/cup.webp', label: '温酒瓷杯', x: 84, y: 80 }
     ],
     steps: [
 { stageIndex: 0, type: 'tap', propId: 'wine_jar', tag: '第一步 · 启清酒坛', icon: '👆', hint: '轻点下方高亮的【清酒坛】，准备将清酒注入青瓷壶', poetic: '启封珊瑚布封口的清酒坛，醇厚米香扑面而来。' },
@@ -113,7 +113,7 @@ export const OPENING_SCENES = [
 
 export const GUEST_POOL = [
   {
-    id: 'scholar', name: '落榜书生', profile: { identity: '江南寒门举子', origin: '赴京科考落第，暂居御街客栈卖字维生', preference: '偏好清酒与素雅细点，重礼节轻浮华', hiddenNeed: '渴望得人敬重体面，若获资助购墨，次夜必有厚报' }, badge: '书生', img: './assets/portraits/scholar.png',
+    id: 'scholar', name: '落榜书生', profile: { identity: '江南寒门举子', origin: '赴京科考落第，暂居御街客栈卖字维生', preference: '偏好清酒与素雅细点，重礼节轻浮华', hiddenNeed: '渴望得人敬重体面，若获资助购墨，次夜必有厚报' }, badge: '书生', img: './assets/portraits/scholar.webp',
     lines: ['借酒消愁，劳烦掌柜亲手备一份。', '夜市灯火暖人，来份细点配酒。'],
     postServe: {
       text: '掌柜好手艺！只是在下今科落第，囊中羞涩，不知掌柜可愿听我吟诗一首，聊作谢礼？',
@@ -132,7 +132,7 @@ export const GUEST_POOL = [
     }
   },
   {
-    id: 'foodie', name: '御街食客', profile: { identity: '汴京老饕坊主', origin: '熟稔樊楼与御街各家酒肆掌故，常携友寻味', preference: '钟爱炙羊肉与桂花糕，讲究火候与卖相', hiddenNeed: '诚心切磋手艺可换取满街口碑相传' }, badge: '食客', img: './assets/portraits/foodie.png',
+    id: 'foodie', name: '御街食客', profile: { identity: '汴京老饕坊主', origin: '熟稔樊楼与御街各家酒肆掌故，常携友寻味', preference: '钟爱炙羊肉与桂花糕，讲究火候与卖相', hiddenNeed: '诚心切磋手艺可换取满街口碑相传' }, badge: '食客', img: './assets/portraits/foodie.webp',
     lines: ['闻着梦华楼的香味来的，请掌柜费心！', '听说掌柜手作最是讲究，来一份！'],
     postServe: {
       text: '妙哉妙哉！这滋味竟比樊楼还要清爽几分！掌柜这手艺，可愿透露几分秘诀？',
@@ -151,7 +151,7 @@ export const GUEST_POOL = [
     }
   },
   {
-    id: 'constable', name: '夜巡捕快', profile: { identity: '开封府御街巡夜差役', origin: '每夜巡行州桥至御街，最知夜市冷暖与客流风向', preference: '爱吃热乎顶饱的炙羊肉与温酒', hiddenNeed: '奉茶相敬可增商誉，闲谈亦能探得御街商情' }, badge: '捕快', img: './assets/portraits/constable.png',
+    id: 'constable', name: '夜巡捕快', profile: { identity: '开封府御街巡夜差役', origin: '每夜巡行州桥至御街，最知夜市冷暖与客流风向', preference: '爱吃热乎顶饱的炙羊肉与温酒', hiddenNeed: '奉茶相敬可增商誉，闲谈亦能探得御街商情' }, badge: '捕快', img: './assets/portraits/constable.webp',
     lines: ['汴梁夜深露重，整口热乎的垫垫肚子。', '不急不急，掌柜慢慢做。'],
     postServe: {
       text: '多谢掌柜！近来御街夜市人潮汹涌，我巡夜路过此处，见你家灯火最是安稳有序。',
@@ -170,7 +170,7 @@ export const GUEST_POOL = [
     }
   },
   {
-    id: 'painter', name: '汴京画师', profile: { identity: '市井风俗画师', origin: '立志绘成《汴梁夜市图》，常在运河柳岸写生', preference: '喜青梅酿与桂花糕，痴迷清透器物光影', hiddenNeed: '资助采买石青金粉，第3夜成画后必带重金与满城盛誉归来' }, badge: '画师', img: './assets/portraits/painter.png',
+    id: 'painter', name: '汴京画师', profile: { identity: '市井风俗画师', origin: '立志绘成《汴梁夜市图》，常在运河柳岸写生', preference: '喜青梅酿与桂花糕，痴迷清透器物光影', hiddenNeed: '资助采买石青金粉，第3夜成画后必带重金与满城盛誉归来' }, badge: '画师', img: './assets/portraits/painter.webp',
     lines: ['刚画完御街灯火，来梦华楼歇歇脚。', '劳烦掌柜备一味清雅吃食。'],
     postServe: {
       text: '掌柜案板上的光影与配色实在清透！我正欲画一幅《汴梁夜市图》，可否将梦华楼画入卷中？',
@@ -189,7 +189,7 @@ export const GUEST_POOL = [
     }
   },
   {
-    id: 'heroine', name: '江湖女侠', profile: { identity: '行侠南北的剑客', origin: '路过汴京歇脚，最看重掌柜是否重义轻利', preference: '大口吃炙羊肉、痛饮温酒，爽快给赏', hiddenNeed: '谈及义利之辨时，坚守“以义制利”最得其敬重' }, badge: '侠客', img: './assets/portraits/heroine.png',
+    id: 'heroine', name: '江湖女侠', profile: { identity: '行侠南北的剑客', origin: '路过汴京歇脚，最看重掌柜是否重义轻利', preference: '大口吃炙羊肉、痛饮温酒，爽快给赏', hiddenNeed: '谈及义利之辨时，坚守“以义制利”最得其敬重' }, badge: '侠客', img: './assets/portraits/heroine.webp',
     lines: ['好酒好肉尽管端来，赏银少不了你的！', '掌柜手艺名不虚传，请吧。'],
     postServe: {
       text: '痛快！走南闯北这么些年，头一回在酒楼里吃得这般松弛惬意。掌柜，你开店图的是利，还是义？',

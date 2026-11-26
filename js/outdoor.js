@@ -6,9 +6,6 @@ import {
   showToast, unlockCodex, showSettlementBanner, checkGameOver, setRumor
 } from './ui.js';
 
-const pillHot = document.getElementById('pill-hot-dish');
-const pillMat = document.getElementById('pill-fine-mat');
-
 // v35 一景一器：檐下三灯 & 青荷折扇 专属DOM
 const lanternOverlay = document.getElementById('lantern-stage-overlay');
 const lanternBackdrop = document.getElementById('lantern-stage-backdrop');
@@ -145,7 +142,7 @@ function bindDiegeticEventsOnce() {
 
 const OUTDOOR_ENCOUNTERS = [
   {
-    portrait: './assets/portraits/scholar.png',
+    portrait: './assets/portraits/scholar.webp',
     speaker: '落榜书生', sub: '御街长桥',
     text: '掌柜的，你也出来透气？方才我在桥头卖字画无人问津，连回乡的盘缠都快凑不齐了……',
     choices: [
@@ -183,7 +180,7 @@ const OUTDOOR_ENCOUNTERS = [
     ]
   },
   {
-    portrait: './assets/portraits/painter.png',
+    portrait: './assets/portraits/painter.webp',
     speaker: '汴京画师', sub: '运河柳岸',
     text: '掌柜快看这运河水色，碧蓝里浮着金柳倒影！我正愁颜料不够，没法把这清透景致画全。',
     choices: [
@@ -220,7 +217,7 @@ const OUTDOOR_ENCOUNTERS = [
     ]
   },
   {
-    portrait: './assets/portraits/peddler_v2.png',
+    portrait: './assets/portraits/peddler_v2.webp',
     speaker: '御街货郎', sub: '夜市摊头',
     text: '掌柜出来转悠啦？今夜汴京城里都在传，有几位贵客专门奔着清爽手作的吃食来的！',
     choices: [
@@ -257,18 +254,6 @@ const OUTDOOR_ENCOUNTERS = [
 let encounterCursor = 0;
 
 export function renderOutdoorStatus() {
-  if (pillHot) {
-    pillHot.textContent = state.hotDish
-      ? `热销${BOARD_RECIPES[state.hotDish].name}2×`
-      : '热销未打听';
-    pillHot.classList.toggle('is-active', Boolean(state.hotDish));
-  }
-  if (pillMat) {
-    pillMat.textContent = state.fineMaterial
-      ? '鲜料已备'
-      : '鲜料未采买';
-    pillMat.classList.toggle('is-active', Boolean(state.fineMaterial));
-  }
   const wbFine = document.getElementById('wb-fine-mat');
   const wbHot = document.getElementById('wb-hot-dish');
   if (wbFine) wbFine.textContent = state.fineMaterial ? '已备好鲜料' : '尚未采买';

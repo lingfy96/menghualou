@@ -7,13 +7,7 @@ export const dom = {
   counterView: document.getElementById('counter-view'),
   boardView: document.getElementById('board-view'),
   outdoorView: document.getElementById('outdoor-view'),
-  outdoorViewport: document.getElementById('outdoor-scene-viewport'),
-  outdoorExploreHint: document.getElementById('outdoor-explore-hint'),
   btnGoOutdoor: document.getElementById('btn-go-outdoor'),
-  btnOutdoorBack: document.getElementById('btn-outdoor-back'),
-  btnOutEncounter: document.getElementById('btn-out-encounter'),
-  btnOutIntel: document.getElementById('btn-out-intel'),
-  btnOutLantern: document.getElementById('btn-out-lantern'),
   btnDemoOutdoor: document.getElementById('btn-demo-outdoor'),
   statDay: document.getElementById('stat-day'),
   statSilver: document.getElementById('stat-silver'),
@@ -23,7 +17,6 @@ export const dom = {
   popRep: document.getElementById('pop-rep'),
   popWenxin: document.getElementById('pop-wenxin'),
   tallyCounterText: document.getElementById('tally-counter-text'),
-  tallyOutdoorText: document.getElementById('tally-outdoor-text'),
   settlementPanel: document.getElementById('settlement-panel'),
   settlementSeal: document.getElementById('settlement-seal'),
   settlementTitle: document.getElementById('settlement-title'),
@@ -46,7 +39,6 @@ export const dom = {
   miracleTimer: document.getElementById('miracle-timer'),
   journalToast: document.getElementById('journal-toast'),
   // 前厅面对面元素
-  waitingHint: document.getElementById('waiting-guest-hint'),
   guestActor: document.getElementById('guest-actor'),
   guestPortrait: document.getElementById('guest-portrait-img'),
   orderBubble: document.getElementById('order-bubble'),
@@ -71,7 +63,6 @@ export const dom = {
   btnRiddleHint: document.getElementById('btn-riddle-hint'),
   comboPill: document.getElementById('combo-pill'),
   btnServeDish: document.getElementById('btn-serve-dish'),
-  btnBackCounter: document.getElementById('btn-back-counter'),
   // AVG
   avgOverlay: document.getElementById('avg-overlay'),
   avgBackdrop: document.getElementById('avg-backdrop'),
@@ -131,7 +122,6 @@ export const dom = {
   profileEncounterCount: document.getElementById('profile-encounter-count'),
   profileRows: document.getElementById('profile-rows'),
   ledgerNarrative: document.getElementById('ledger-narrative'),
-  outdoorRumorLine: document.getElementById('outdoor-rumor-line'),
   rumorLaneA: document.getElementById('rumor-lane-a'),
   rumorLaneB: document.getElementById('rumor-lane-b'),
   outdoorWorkbench: document.getElementById('outdoor-workbench'),
@@ -145,58 +135,58 @@ export const dom = {
 
 // ================= 1. 人物立绘预加载与防破图安全加载 =================
 const ALL_PORTRAITS = [
-  './assets/portraits/scholar.png',
-  './assets/portraits/foodie.png',
-  './assets/portraits/constable.png',
-  './assets/portraits/painter.png',
-  './assets/portraits/heroine.png',
-  './assets/portraits/libai.png',
-  './assets/portraits/libai_face.png',
-  './assets/portraits/wife.png',
-  './assets/portraits/peddler.png',
-  './assets/portraits/peddler_v2.png',
-  './assets/ui/lantern_panel.png',
-  './assets/ui/lantern_celadon.png',
-  './assets/ui/lantern_coral.png',
-  './assets/ui/lantern_amber.png',
-  './assets/ui/torn_paper_card.png',
-  './assets/ui/ink_gold_stroke.png',
-  './assets/ui/lotus_fan_deco.png',
-  './assets/ui/boat_plum_deco.png',
-  './assets/ui/brush_dialogue_wash.png',
-  './assets/ui/brush_choice_celadon.png',
-  './assets/ui/brush_nameplate_jade.png',
-  './assets/ui/memo_book_amber.png',
-  './assets/ui/brush_cta_coral.png',
-  './assets/ui/cloud_nav_guide.png',
-  './assets/ui/memo_book_amber_v2.png',
-  './assets/ui/prism_dialogue_stroke.png',
-  './assets/ui/prism_choice_stroke.png',
-  './assets/ui/prism_nameplate_stroke.png',
-  './assets/ui/silk_dialogue_stroke.png',
-  './assets/ui/silk_choice_stroke.png',
-  './assets/ui/silk_nameplate_stroke.png'
+  './assets/portraits/scholar.webp',
+  './assets/portraits/foodie.webp',
+  './assets/portraits/constable.webp',
+  './assets/portraits/painter.webp',
+  './assets/portraits/heroine.webp',
+  './assets/portraits/libai.webp',
+  './assets/portraits/libai_face.webp',
+  './assets/portraits/wife.webp',
+  './assets/portraits/peddler_v2.webp',
+  './assets/ui/lantern_celadon.webp',
+  './assets/ui/lantern_coral.webp',
+  './assets/ui/lantern_amber.webp',
+  './assets/ui/lotus_fan_deco.webp',
+  './assets/ui/boat_plum_deco.webp',
+  './assets/ui/brush_cta_coral.webp',
+  './assets/ui/cloud_nav_guide.webp',
+  './assets/ui/memo_book_amber_v2.webp',
+  './assets/ui/silk_dialogue_stroke.webp',
+  './assets/ui/silk_choice_stroke.webp',
+  './assets/ui/silk_nameplate_stroke.webp'
 ];
 const portraitCache = new Map();
 
 export function preloadAllPortraits() {
-  for (const src of ALL_PORTRAITS) {
-    const img = new Image();
-    img.decoding = 'async';
-    img.src = src;
-    portraitCache.set(src, img);
+  let idx = 0;
+  function loadBatch() {
+    const end = Math.min(idx + 3, ALL_PORTRAITS.length);
+    for (; idx < end; idx++) {
+      const src = ALL_PORTRAITS[idx];
+      if (portraitCache.has(src)) continue;
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = src;
+      portraitCache.set(src, img);
+    }
+    if (idx < ALL_PORTRAITS.length) {
+      setTimeout(loadBatch, 180);
+    }
   }
+  loadBatch();
 }
-preloadAllPortraits();
+const _schedulePortraitIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1400));
+_schedulePortraitIdle(() => preloadAllPortraits());
 
 export function setPortraitSafely(imgEl, src) {
   if (!imgEl || !src) return;
-  const fallback = './assets/portraits/scholar.png';
+  const fallback = './assets/portraits/scholar.webp';
   imgEl.onerror = () => {
     if (imgEl.dataset.retried !== src) {
       imgEl.dataset.retried = src;
       imgEl.src = src;
-    } else if (!imgEl.src.endsWith('scholar.png')) {
+    } else if (!imgEl.src.endsWith('scholar.webp')) {
       imgEl.onerror = null;
       imgEl.src = fallback;
     }
@@ -211,9 +201,9 @@ export function setPortraitSafely(imgEl, src) {
   if (actor && actor.classList.contains('guest-actor')) {
     const key = (src || '').split('/').pop();
     const lift = {
-      'scholar.png': 26, 'libai.png': 22, 'libai_face.png': 22,
-      'foodie.png': 18, 'peddler.png': 18, 'peddler_v2.png': 14, 'constable.png': 10,
-      'wife.png': 2, 'painter.png': 0, 'heroine.png': 0
+      'scholar.webp': 26, 'libai.webp': 22, 'libai_face.webp': 22,
+      'foodie.webp': 18, 'peddler_v2.webp': 14, 'constable.webp': 10,
+      'wife.webp': 2, 'painter.webp': 0, 'heroine.webp': 0
     }[key] ?? 6;
     actor.style.setProperty('--portrait-lift', `${lift}px`);
   }
@@ -261,7 +251,7 @@ function closeModalWithMotion(el) {
 // 全局按钮水墨晕染涟漪动效
 document.addEventListener('pointerdown', (e) => {
   const btn = e.target.closest('button');
-  if (!btn || btn.disabled) return;
+  if (!btn || btn.disabled || btn.classList.contains('board-prop-btn') || btn.classList.contains('art-hotspot')) return;
   const pos = getComputedStyle(btn).position;
   if (pos === 'static') return;
   const rect = btn.getBoundingClientRect();
@@ -278,9 +268,9 @@ document.addEventListener('pointerdown', (e) => {
 
 const SHICHEN = ['戌时', '亥时', '子时', '丑时'];
 const ATTR_META = {
-  silver: { img: './assets/ui/sycee.png', label: '银两', unit: '两' },
-  rep: { img: './assets/ui/seal.png', label: '商誉', unit: '' },
-  wenxin: { img: './assets/ui/scroll.png', label: '文心', unit: '' }
+  silver: { img: './assets/ui/sycee.webp', label: '银两', unit: '两' },
+  rep: { img: './assets/ui/seal.webp', label: '商誉', unit: '' },
+  wenxin: { img: './assets/ui/scroll.webp', label: '文心', unit: '' }
 };
 
 function renderAttrChipHTML(ef) {
@@ -412,7 +402,6 @@ export function renderCounterGuest() {
   });
 
   if (!g) {
-    if (dom.waitingHint) dom.waitingHint.classList.remove('hidden');
     if (dom.btnGoOutdoor) dom.btnGoOutdoor.classList.add('is-inviting');
     if (dom.btnGuestProfile) dom.btnGuestProfile.style.display = 'none';
     dom.guestActor.classList.remove('visible');
@@ -432,7 +421,6 @@ export function renderCounterGuest() {
     return;
   }
 
-  if (dom.waitingHint) dom.waitingHint.classList.add('hidden');
   if (dom.btnGoOutdoor) dom.btnGoOutdoor.classList.remove('is-inviting');
   if (dom.btnGuestProfile) dom.btnGuestProfile.style.display = 'inline-flex';
   dom.guestActor.classList.add('visible');
@@ -474,7 +462,7 @@ export function renderCounterGuest() {
     if (extraWen > 0) extraParts.push(`+${extraWen}文心`);
     if (extraRep > 0) extraParts.push(`+${extraRep}商誉`);
     const extraStr = extraParts.length ? ` · ${extraParts.join(' ')}` : '';
-    dom.orderYieldPreview.innerHTML = `<img src="./assets/ui/sycee.png" alt="银" />${hotTag}+${est}两${extraStr}`;
+    dom.orderYieldPreview.innerHTML = `<img src="./assets/ui/sycee.webp" alt="银" />${hotTag}+${est}两${extraStr}`;
   }
 
   if (state.preparedDish) {
@@ -517,12 +505,25 @@ export function updateGuestPatienceBar() {
   }
 }
 
+let hudSnap = {};
 export function renderHUD() {
   const ratio = Math.min(1, state.dayElapsedSec / GAME_CONFIG.dayDurationSec);
   const shichenIdx = Math.min(SHICHEN.length - 1, Math.floor(ratio * SHICHEN.length));
-  dom.statDay.textContent = `第${state.day}夜 · ${SHICHEN[shichenIdx]}`;
-  if (dom.outdoorView) dom.outdoorView.classList.toggle('is-late-night', shichenIdx >= 2);
-  dom.nightProgressFill.style.width = `${(ratio * 100).toFixed(1)}%`;
+  const dayStr = `第${state.day}夜 · ${SHICHEN[shichenIdx]}`;
+  const pctStr = `${(ratio * 100).toFixed(1)}%`;
+  const lateNight = shichenIdx >= 2;
+  if (hudSnap.dayStr !== dayStr) {
+    hudSnap.dayStr = dayStr;
+    dom.statDay.textContent = dayStr;
+  }
+  if (hudSnap.lateNight !== lateNight) {
+    hudSnap.lateNight = lateNight;
+    if (dom.outdoorView) dom.outdoorView.classList.toggle('is-late-night', lateNight);
+  }
+  if (hudSnap.pctStr !== pctStr) {
+    hudSnap.pctStr = pctStr;
+    dom.nightProgressFill.style.width = pctStr;
+  }
 
   // 检测数值变化并弹出实时增减飘字
   if (state.silver !== prevStats.silver) triggerHudDelta(dom.popSilver, state.silver - prevStats.silver);
@@ -546,10 +547,6 @@ export function renderHUD() {
 
   const tallyStr = `今夜 +${state.dayEarnedSilver}两 · ${state.dayServedCount}位`;
   if (dom.tallyCounterText) dom.tallyCounterText.textContent = tallyStr;
-  if (dom.tallyOutdoorText) {
-    dom.tallyOutdoorText.textContent = tallyStr;
-    dom.tallyOutdoorText.classList.toggle('is-zero', state.dayEarnedSilver === 0 && state.dayServedCount === 0);
-  }
 
   if (state.comboCount >= 2) {
     dom.comboPill.classList.add('active');
@@ -820,7 +817,6 @@ function collapseAvgChoices() {
   if (!avgHasChoices || !avgChoicesRevealed) return;
   avgChoicesRevealed = false;
   dom.avgOverlay.classList.remove('choosing');
-  dom.avgOverlay.classList.toggle('is-outdoor-encounter', Boolean(isOutdoorEncounter));
   dom.avgChoices.classList.remove('revealed');
   if (dom.btnAvgCollapse) dom.btnAvgCollapse.style.display = 'none';
   dom.avgNextTri.style.display = 'inline';
@@ -952,6 +948,7 @@ export function openAvgDialogue({ portrait, speaker, sub, text, showPoem = false
   avgPendingStoryChoices = choices;
   avgPendingOnDismiss = onDismiss;
   dom.avgOverlay.classList.remove('choosing');
+  dom.avgOverlay.classList.toggle('is-outdoor-encounter', Boolean(isOutdoorEncounter));
   dom.avgChoices.classList.remove('revealed');
   if (dom.btnAvgCollapse) dom.btnAvgCollapse.style.display = 'none';
   if (dom.avgPetalLayer) dom.avgPetalLayer.innerHTML = '';
@@ -1083,41 +1080,41 @@ export function openThreeNightEnding() {
   else if (maxP - minP <= 1 && state.wenxin >= 12 && state.silver >= 180 && state.totalServedCount >= 25) {
     title = '《三不朽》';
     desc = '孟元老在书里写下了你——不是为了诗，不是为了钱，也不是为了人情，而是你居然三样都做到了。古人云立德、立功、立言，你在一间小酒楼里，把这三件事做了一遍。';
-    emblem = './assets/ui/ending_scholar.png';
+    emblem = './assets/ui/ending_scholar.webp';
   }
   // 3. 三大路线判定
   else if (wen >= trade && wen >= heart) {
     if (state.wenxin >= 12) {
       title = '《一代儒商》';
       desc = '三夜灯火，你以义制利、以诗会友。孟元老写：「御街有梦华楼，壁有太白旧题，座有君子。」百年后人们记得的不是酒价，是那面墙。';
-      emblem = './assets/ui/ending_scholar.png';
+      emblem = './assets/ui/ending_scholar.webp';
     } else if (state.wenxin <= 3 && !state.investments.scholar && !state.investments.painter && state.wifeChoseLiquor) {
       title = '《饥寒书生》';
       desc = '你把书生的墨宝换了三十两，把灯谜卖给了隔壁。第三夜他没再来。画师临走前把石青撒进汴河：丹青不遇知音，不如喂鱼。';
     } else {
       title = '《青灯书肆》';
       desc = '梦华楼没成为最赚钱的酒楼，却成了汴梁文人的据点。夜里常有穷书生来蹭一盏灯，你从来不赶。账薄了些，但墙上快挂满字了。';
-      emblem = './assets/ui/ending_scholar.png';
+      emblem = './assets/ui/ending_scholar.webp';
     }
   } else if (trade >= wen && trade >= heart) {
     if (state.silver >= 180) {
       title = '《汴京大贾》';
       desc = '你算无遗策，商情、灯市、引流，每一两银子都生出了下一两。三年后梦华楼成了御街首富，账房先生姓孟——对，就是写《东京梦华录》的那位。';
-      emblem = './assets/ui/ending_merchant.png';
+      emblem = './assets/ui/ending_merchant.webp';
     } else {
       title = '《御街灯市》';
       desc = '你没成为首富，但你点的那排灯成了御街一景。往来客商都认得「梦华楼的红灯」，说那光里有股人情味。';
-      emblem = './assets/ui/ending_merchant.png';
+      emblem = './assets/ui/ending_merchant.webp';
     }
   } else {
     if (state.totalServedCount >= 25) {
       title = '《诗酒名楼》';
       desc = '你记得每位客人的酒。商妇再来时你没多问，只是默默温了一盏青梅酿。三年后她说：「整条御街，只有梦华楼记得我丈夫出门那年，我穿的是什么颜色的衣裳。」';
-      emblem = './assets/ui/ending_tavern.png';
+      emblem = './assets/ui/ending_tavern.webp';
     } else {
       title = '《解愁一盏》';
       desc = '生意清淡，但总有人来。失意的人在这里坐一晚上，走时眼里松快些。你没赚到什么钱，只是那盏解愁暖灯，从没熄过。';
-      emblem = './assets/ui/ending_tavern.png';
+      emblem = './assets/ui/ending_tavern.webp';
     }
   }
 

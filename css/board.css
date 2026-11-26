@@ -420,6 +420,9 @@
   border-color: transparent;
   background: transparent;
   box-shadow: none;
+  animation: none;
+}
+.board-prop-btn.highlight img {
   animation: propGentleFloat 2.1s ease-in-out infinite;
 }
 .board-prop-btn.highlight::before {
@@ -447,7 +450,7 @@
   min-width: 142px;
   height: 52px;
   padding: 0 24px 2px 20px;
-  background: url('../assets/ui/brush_cta_coral.png') center / 100% 100% no-repeat;
+  background: url('../assets/ui/brush_cta_coral.webp') center / 100% 100% no-repeat;
   filter: drop-shadow(0 5px 12px rgba(176, 54, 40, 0.26));
   color: #fffaf2;
   font-size: 21px;
@@ -464,7 +467,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .board-prop-btn.highlight,
+  .board-prop-btn.highlight img,
   .board-prop-btn.highlight::before,
   .board-serve-seal.ready {
     animation: none;

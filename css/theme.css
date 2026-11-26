@@ -8,59 +8,31 @@
    ========================================================================== */
 :root {
   --xuan-bg: #f8f4ea;
-  --xuan-deep: #efe8d8;
-  --xuan-paper-img: url('../assets/bg/xuan_paper.jpg');
-  --xuan-pine-img: url('../assets/bg/xuan_pine.jpg');
-  --seal-bg-img: url('../assets/ui/cinnabar_seal.png');
-  --outing-lantern-img: url('../assets/ui/outing_lantern.png');
+  --xuan-paper-img: url('../assets/bg/xuan_paper.webp');
+  --xuan-pine-img: url('../assets/bg/xuan_pine.webp');
+  --seal-bg-img: url('../assets/ui/cinnabar_seal.webp');
   --seal-drop-shadow: drop-shadow(-1px 3px 6px rgba(102, 24, 18, 0.28));
   --seal-riddle-filter: hue-rotate(155deg) saturate(0.75) brightness(0.92);
-  --lantern-sway-shadow: drop-shadow(-2px 6px 10px rgba(48, 36, 24, 0.28));
 
   --ink-text: #2a241e;
   --ink-muted: #655a4e;
   --ink-stroke: rgba(74, 63, 52, 0.42);
   --ink-stroke-soft: rgba(126, 112, 94, 0.34);
-  --xuan-border: rgba(154, 140, 118, 0.65);
 
   --mint-deep: #3a7568;
   --cinnabar: #a83226;
   --cinnabar-dark: #822017;
-  --gold-warm: #c9923b;
 
   /* 温润宋画装裱风基础色板（取自水彩原画：暖木褐 / 青瓷绿 / 灯笼珊瑚朱 / 半透暖宣） */
   --song-paper: rgba(249, 244, 234, 0.90);
-  --song-paper-soft: rgba(249, 244, 234, 0.78);
   --song-wood: #6e523a;
   --song-wood-line: rgba(126, 98, 70, 0.42);
-  --song-wood-inner: rgba(126, 98, 70, 0.22);
   --song-celadon: #3f7c70;
-  --song-coral: #c4543d;
   --song-gold: #8a5b12;
-  --song-shadow: 0 8px 24px rgba(52, 38, 24, 0.18);
 
   /* 御街模块专用语义变量（全量走 CSS 变量，禁止硬编码） */
-  --ink-zero: #61564a;
   --song-paper-bright: rgba(252, 248, 240, 0.96);
-  --song-paper-border-inner: rgba(255, 252, 246, 0.68);
-  --song-coral-soft: rgba(196, 84, 61, 0.10);
-  --song-coral-border: rgba(168, 50, 38, 0.56);
-  --song-celadon-soft: rgba(63, 124, 112, 0.11);
-  --song-celadon-border: rgba(63, 124, 112, 0.48);
-  --song-gold-soft: rgba(184, 130, 50, 0.12);
-  --song-gold-border: rgba(184, 130, 50, 0.46);
   --out-sky-bg: #d8e9e4;
-  --out-grad-top: rgba(44, 34, 24, 0.28);
-  --out-grad-bot: rgba(40, 30, 22, 0.44);
-  --out-dock-bg: rgba(249, 244, 234, 0.84);
-  --out-card-bg: rgba(252, 248, 240, 0.88);
-  --out-card-primary-bg: rgba(253, 245, 239, 0.94);
-  --out-blur: 10px;
-  --out-pad-x: 12px;
-  --out-gap: 8px;
-  --out-radius-panel: 8px;
-  --out-radius-card: 6px;
-  --out-radius-pill: 4px;
 
   --shadow-ink: -2px 6px 18px rgba(48, 39, 30, 0.18);
   --font-brush: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', cursive, serif;
@@ -72,7 +44,6 @@
   --slip-radius: 3px;
   --slip-shadow: 0 2px 8px rgba(52, 38, 24, 0.12);
   --fs-status: 0.82rem;
-  --fs-danmu: 0.95rem;
   --tone-neutral: #3C2F24;
   --tone-pos: var(--song-celadon);
   --tone-warn: var(--cinnabar);
@@ -142,8 +113,7 @@ body {
 }
 
 /* 水墨双框宣纸卡片（摒弃现代直角白卡） */
-.deckle-card,
-.ink-paper-box {
+.deckle-card {
   position: relative;
   background: var(--xuan-pine-img) center/cover, var(--xuan-bg);
   border: 1px solid var(--ink-stroke);
@@ -165,28 +135,11 @@ body {
   font-family: var(--font-brush);
   font-size: 1rem;
   letter-spacing: 2.5px;
-  color: var(--xuan-bg);
   padding: 8px 18px;
-  border: none;
-  border-radius: 0;
-  background: var(--seal-bg-img) center / 100% 100% no-repeat;
-  filter: var(--seal-drop-shadow);
-  text-shadow: 0 1px 2px rgba(72, 16, 10, 0.45);
-  transition: transform 90ms ease, opacity 160ms ease, filter 160ms ease;
-}
-
-.seal-btn:hover:not(:disabled) {
-  filter: brightness(1.06);
 }
 
 .seal-btn:active:not(:disabled) {
   transform: scale(0.93);
-}
-
-.seal-btn:disabled {
-  opacity: 0.36;
-  filter: saturate(0.3);
-  cursor: not-allowed;
 }
 
 /* 全局水墨晕染涟漪粒子（JS 动态注入至所有按钮） */
@@ -308,6 +261,7 @@ body {
   outline: none;
 }
 .seal-btn:disabled {
+  cursor: not-allowed;
   opacity: 0.48;
   color: #7c7166;
   border-color: rgba(138, 124, 110, 0.45);
@@ -323,7 +277,7 @@ body {
   padding: 10px 28px 12px 24px;
   border: none;
   border-radius: 0;
-  background: url('../assets/ui/brush_cta_coral.png') center / 100% 100% no-repeat;
+  background: url('../assets/ui/brush_cta_coral.webp') center / 100% 100% no-repeat;
   box-shadow: none;
   color: #fffaf2;
   font-size: 1.24rem;
@@ -333,7 +287,7 @@ body {
 }
 .seal-btn.sheet-main-btn:hover:not(:disabled),
 .seal-btn.sheet-main-btn:focus-visible:not(:disabled) {
-  background: url('../assets/ui/brush_cta_coral.png') center / 100% 100% no-repeat;
+  background: url('../assets/ui/brush_cta_coral.webp') center / 100% 100% no-repeat;
   border: none;
   box-shadow: none;
   color: #ffffff;
@@ -423,3 +377,8 @@ body {
 }
 .scroll-colophon-btn:focus-visible { outline: none; }
 .scroll-colophon-btn:active { transform: scale(0.96); }
+
+/* v51：全局按钮零延迟触控响应（消除移动端 300ms 延迟） */
+button {
+  touch-action: manipulation;
+}

@@ -17,7 +17,7 @@ import {
   openAvgDialogue, closeAvgDialogue, openThreeNightEnding, checkGameOver, showSettlementBanner, spawnSealActionFloat, setRumor, openGuestProfileModal, closeGuestProfileModal, toggleWorkbench
 } from './ui.js';
 
-let rafId = null, lastTime = 0;
+let rafId = null, lastTime = 0, hudTickAccum = 0;
 
 function setDesktopMode(isDesktop) {
   dom.appFrame.classList.toggle('desktop-mode', isDesktop);
@@ -25,7 +25,7 @@ function setDesktopMode(isDesktop) {
     dom.menuLayoutState.textContent = isDesktop ? '宽屏' : '竖屏';
   }
 }
-setDesktopMode(window.innerWidth >= 820);
+setDesktopMode(false);
 
 function inviteNextGuest(forceType = null) {
   const extraPatience = state.upgrades.gold_sign * 8;
@@ -38,7 +38,7 @@ function inviteNextGuest(forceType = null) {
   if (forceType === 'libai' || (!forceType && r < wLibai)) {
     g = {
       type: 'libai', name: '醉吟词客', badge: '太白遗风',
-      img: './assets/portraits/libai_face.png',
+      img: './assets/portraits/libai_face.webp',
       needItem: 'wine', remaining: GAME_CONFIG.libai.needWineCount,
       line: '听闻贵楼粉墙存有前朝太白题墨，请掌柜亲手为我温两壶清酒！',
       waitedSec: 0, maxPatienceSec: GAME_CONFIG.libai.maxPatienceSec + extraPatience
@@ -46,7 +46,7 @@ function inviteNextGuest(forceType = null) {
   } else if (forceType === 'wife' || (!forceType && r < wLibai + wWife)) {
     g = {
       type: 'wife', name: '江夏商妇', badge: '商人妇',
-      img: './assets/portraits/wife.png',
+      img: './assets/portraits/wife.webp',
       needItem: 'plum_wine', remaining: 1,
       line: '掌柜，给我亲手调一盏青梅酿吧，今夜心里堵得慌。',
       waitedSec: 0, maxPatienceSec: GAME_CONFIG.wife.maxPatienceSec + extraPatience
@@ -80,13 +80,13 @@ function triggerLibaiStory() {
   unlockCodex('changganxing_libai');
 
   openAvgDialogue({
-    portrait: './assets/portraits/libai.png',
+    portrait: './assets/portraits/libai.webp',
     speaker: '醉客', sub: '诵太白诗',
     text: '我读太白《长干行》三十年，今日醉了，竟觉那青梅竹马就在眼前……长安？我没去过。是诗带我去的。',
     showPoem: false,
     onDismiss: () => {
       openAvgDialogue({
-        portrait: './assets/portraits/libai_face.png',
+        portrait: './assets/portraits/libai_face.webp',
         speaker: '醉客', sub: '续墨题壁',
         text: '墙上太白的旧墨，被我补足了半阙。借古人的笔，写今日的心事——掌柜，这算不算我的题壁？',
         showPoem: true,
@@ -112,7 +112,7 @@ function triggerWifeStory() {
   SoundFX.tapProp(2);
   unlockCodex('jiangxiaxing_wife');
   openAvgDialogue({
-    portrait: './assets/portraits/wife.png',
+    portrait: './assets/portraits/wife.webp',
     speaker: '江夏商妇', sub: '商人妇',
     text: '掌柜的，我家那口子行商扬州半年不归。你说，我该怎么过下去？',
     poemKey: 'wife',
@@ -222,7 +222,7 @@ function serveCurrentGuest() {
   state.reputation = Math.min(120, state.reputation + gainRep);
 
   SoundFX.serveOk();
-  spawnSealActionFloat(`<span class="sf-cost">消耗${dishName}×1</span> · <img src="./assets/ui/sycee.png" alt="银" /><span class="sf-gold">+${earned}两</span>`);
+  spawnSealActionFloat(`<span class="sf-cost">消耗${dishName}×1</span> · <img src="./assets/ui/sycee.webp" alt="银" /><span class="sf-gold">+${earned}两</span>`);
 
   const multLabels = [];
   if (hotMult > 1) multLabels.push('热销2×');
@@ -333,7 +333,7 @@ function updateGame(dt) {
             state.investments.scholar = false;
             state.silver += 80; state.wenxin += 10;
             openAvgDialogue({
-              portrait: './assets/portraits/scholar.png', speaker: '落榜书生', sub: '跨夜回报',
+              portrait: './assets/portraits/scholar.webp', speaker: '落榜书生', sub: '跨夜回报',
               text: '掌柜大恩！承蒙昨夜买下墨宝，今日竟被礼部大人赏识！特奉上润笔谢礼80两与文心10点！',
               onDismiss: () => { closeAvgDialogue(); state.modalOpen = false; state.paused = false; renderHUD(); lastTime = performance.now(); }
             });
@@ -341,7 +341,7 @@ function updateGame(dt) {
             state.investments.painter = false;
             state.silver += 100; state.reputation = Math.min(120, state.reputation + 15);
             openAvgDialogue({
-              portrait: './assets/portraits/painter.png', speaker: '汴京画师', sub: '跨夜回报',
+              portrait: './assets/portraits/painter.webp', speaker: '汴京画师', sub: '跨夜回报',
               text: '掌柜！我用你资助的石青金粉画成《梦华夜市图》，轰动全城！特带赏金100两与满城商誉前来报喜！',
               onDismiss: () => { closeAvgDialogue(); state.modalOpen = false; state.paused = false; renderHUD(); lastTime = performance.now(); }
             });
@@ -362,7 +362,6 @@ function updateGame(dt) {
     if (state.nextGuestTimer <= 0 && state.dayElapsedSec < GAME_CONFIG.dayDurationSec) inviteNextGuest();
   } else {
     state.currentGuest.waitedSec += dt;
-    updateGuestPatienceBar();
     if (state.currentGuest.waitedSec >= state.currentGuest.maxPatienceSec) {
       const g = state.currentGuest;
       const pSilver = g.type === 'libai' ? GAME_CONFIG.libai.smashPenaltySilver : (g.type === 'wife' ? GAME_CONFIG.wife.smashPenaltySilver : GAME_CONFIG.normal.smashPenaltySilver);
@@ -375,7 +374,12 @@ function updateGame(dt) {
       renderCounterGuest(); renderHUD(); checkGameOver();
     }
   }
-  renderHUD();
+  hudTickAccum += dt;
+  if (hudTickAccum >= 0.1) {
+    hudTickAccum = 0;
+    if (state.currentGuest) updateGuestPatienceBar();
+    renderHUD();
+  }
 }
 
 function loop(now) {
@@ -484,24 +488,10 @@ const btnBoardBackBottom = document.getElementById('btn-board-back-bottom');
 if (btnBoardBackBottom) btnBoardBackBottom.addEventListener('click', exitBoard);
 
 // 门外御街交互
-let outdoorHintTimer = null;
-function maybeShowOutdoorFirstHint() {
-  try {
-    if (localStorage.getItem('mhl_outdoor_hint_seen')) return;
-    localStorage.setItem('mhl_outdoor_hint_seen', '1');
-  } catch (_) {}
-  const el = document.getElementById('outdoor-first-hint');
-  if (!el) return;
-  el.classList.add('visible');
-  clearTimeout(outdoorHintTimer);
-  outdoorHintTimer = setTimeout(() => el.classList.remove('visible'), 3000);
-}
-
 dom.btnGoOutdoor.addEventListener('click', () => {
   renderOutdoorStatus();
   switchView('outdoor');
   renderHUD();
-  maybeShowOutdoorFirstHint();
 });
 const handleReturnFromOutdoor = () => {
   switchView('counter');
@@ -645,7 +635,7 @@ if (dom.btnResumeBanner) {
 dom.btnPlayAgain.addEventListener('click', () => { SoundFX.serveOk(); startNewRun(); });
 
 dom.btnDemoCook.addEventListener('click', () => { closeCodexModal(); if (!state.currentGuest) showToast('练习模式：当前无候座客官，可先体验桂花糕手作', 'gold'); openBoardFor('osmanthus_cake'); });
-dom.btnDemoOutdoor.addEventListener('click', () => { closeCodexModal(); renderOutdoorStatus(); switchView('outdoor'); maybeShowOutdoorFirstHint(); });
+dom.btnDemoOutdoor.addEventListener('click', () => { closeCodexModal(); renderOutdoorStatus(); switchView('outdoor'); });
 dom.btnDemoCodex.addEventListener('click', () => { for (const item of CODEX_ENTRIES) state.unlockedCodex.add(item.id); SoundFX.miracle(); openCodexModal(); });
 dom.btnDemoLibai.addEventListener('click', () => { closeCodexModal(); triggerLibaiStory(); });
 dom.btnDemoWife.addEventListener('click', () => { closeCodexModal(); triggerWifeStory(); });

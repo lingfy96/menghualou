@@ -6,7 +6,8 @@
   <title>《梦华楼：诗酒商道》· 绢本宣纸典藏版</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="./css/theme.css" />
   <link rel="stylesheet" href="./css/opening.css" />
   <link rel="stylesheet" href="./css/fpv.css" />
@@ -16,33 +17,53 @@
 </head>
 <body>
   <div class="app-frame" id="app-frame">
-    <!-- 一、水墨动态开场动画 + 竖排墨签入口 -->
+    <!-- 一、方案A 平笔光影开场：一束光·穿巷劈光 → 冷影海棠花窗·窗中梦华 -->
     <section class="opening-screen" id="opening-screen" aria-label="开场序幕">
+      <!-- 第一境：窄巷劈光（70%冷蓝紫阴影 + 20%暖阳劈光） -->
       <div class="opening-slide active" id="opening-slide-0">
-        <img src="./assets/bg/opening_street.jpg" alt="汴梁灯火长街" class="opening-bg ken-burns-1" />
+        <img src="./assets/ui/opening_alley_sunlight.webp" fetchpriority="high" decoding="async" alt="汴梁御街窄巷晨光" class="opening-bg alley-push-in" />
+        <div class="alley-sunbeam-sweep" aria-hidden="true"></div>
+        <!-- 左侧冷蓝阴影墙面上的极疏朗太白诗影（留足呼吸空间） -->
+        <div class="alley-poem-projection" id="alley-poem-projection" aria-hidden="true">
+          <span class="alley-poem-col col-1">兰陵美酒郁金香</span>
+          <span class="alley-poem-col col-2">玉碗盛来琥珀光</span>
+        </div>
       </div>
+
+      <!-- 第二境：冷影海棠花窗定格 -->
       <div class="opening-slide" id="opening-slide-1">
-        <img src="./assets/bg/opening_tavern.jpg" alt="梦华楼暮色外景" class="opening-bg ken-burns-2" />
+        <img src="./assets/ui/opening_window_sunlight.webp" fetchpriority="high" decoding="async" alt="宋韵冷影海棠花窗" class="opening-bg opening-window-bg" />
       </div>
-      <canvas class="opening-particles" id="opening-particles"></canvas>
-      <div class="opening-vignette"></div>
+
+      <!-- 跳过序幕 -->
       <button type="button" class="seal-btn opening-skip-btn" id="btn-skip-opening">跳过序幕</button>
-      <div class="opening-caption-box">
-        <div class="opening-tag" id="opening-tag">卷首 · 汴梁夜色</div>
-        <p class="opening-text" id="opening-text"></p>
-        <div class="opening-tap-hint" id="opening-tap-hint">轻触补全全文</div>
-      </div>
+
+      <!-- 第一境底部极简轻提示 -->
+      <div class="opening-tap-whisper" id="opening-tap-whisper">轻触推窗入梦华 ▾</div>
+
+      <!-- 第二境终幕：海棠花窗晴亮中轴「窗中字」竖排梦华楼 + 窗下扯帘迎客 -->
       <div class="opening-title-cta" id="opening-title-cta">
-        <div class="cta-seals">
+        <div class="window-top-seals">
           <span class="paper-seal">东京梦华录</span>
           <span class="paper-seal">文学与商道</span>
         </div>
-        <h1 class="cta-title">梦华楼</h1>
-        <p class="cta-sub">诗酒手作 · 汴梁商道</p>
-        <p class="cta-era">大宋宣和年间，汴梁御街。梦华楼壁上有前朝太白题墨，百年未褪。</p>
-        <button type="button" class="vertical-ink-btn cta-start-btn" id="btn-start-game">扯帘迎客</button>
-        <button type="button" class="cta-replay-btn" id="btn-replay-opening">重温序幕</button>
+        <div class="window-pane-title-zone">
+          <div class="window-title-lockup">
+            <h1 class="cta-title">梦华楼</h1>
+            <p class="cta-sub">诗酒手作 · 汴梁商道</p>
+          </div>
+        </div>
+        <div class="window-bottom-actions">
+          <button type="button" class="curtain-start-btn" id="btn-start-game">
+            <span class="curtain-btn-text">扯帘迎客</span>
+          </button>
+          <button type="button" class="cta-replay-btn" id="btn-replay-opening">重温序幕</button>
+        </div>
       </div>
+
+      <!-- 扯帘入店半透纱帘转场 -->
+      <div class="opening-curtain opening-curtain-left" id="opening-curtain-left" aria-hidden="true"></div>
+      <div class="opening-curtain opening-curtain-right" id="opening-curtain-right" aria-hidden="true"></div>
     </section>
 
     <!-- 二、主游戏壳 -->
@@ -62,19 +83,19 @@
 
         <div class="hud-stats-inline">
           <div class="stat-item silver" id="hud-stat-silver-box" title="银两">
-            <img src="./assets/ui/sycee.png" alt="银两" class="hud-ico-img" />
+            <img decoding="async" loading="lazy" src="./assets/ui/sycee.webp" alt="银两" class="hud-ico-img" />
             <span class="stat-lbl">银</span>
             <strong id="stat-silver">50</strong>
             <span class="hud-delta-pop" id="pop-silver"></span>
           </div>
           <div class="stat-item rep" id="hud-stat-rep-box" title="商誉">
-            <img src="./assets/ui/seal.png" alt="商誉" class="hud-ico-img" />
+            <img decoding="async" loading="lazy" src="./assets/ui/seal.webp" alt="商誉" class="hud-ico-img" />
             <span class="stat-lbl">誉</span>
             <strong id="stat-rep">100</strong>
             <span class="hud-delta-pop" id="pop-rep"></span>
           </div>
           <div class="stat-item wenxin" id="hud-stat-wenxin-box" title="文心">
-            <img src="./assets/ui/scroll.png" alt="文心" class="hud-ico-img" />
+            <img decoding="async" loading="lazy" src="./assets/ui/scroll.webp" alt="文心" class="hud-ico-img" />
             <span class="stat-lbl">文</span>
             <strong id="stat-wenxin">0</strong>
             <span class="hud-delta-pop" id="pop-wenxin"></span>
@@ -124,7 +145,7 @@
 
         <!-- 视角 A：前厅柜台 -->
         <section class="view-layer counter-view active" id="counter-view" aria-label="前厅柜台视角">
-          <img src="./assets/bg/tavern_hall.jpg" alt="梦华楼大堂" class="counter-hall-bg" />
+          <img decoding="async" loading="lazy" src="./assets/bg/tavern_hall.webp" alt="梦华楼大堂" class="counter-hall-bg" />
           <div class="counter-warm-overlay"></div>
 
           <!-- 左上角轻量今夜营收账签（随时可见经营累计正反馈） -->
@@ -136,7 +157,7 @@
           <!-- v40 雕花木窗出街热区：清透鎏金祥云向右引路（符合推窗出街常识） -->
           <button type="button" class="window-outing-tag" id="btn-go-outdoor" title="推窗出街逛御街" aria-label="推窗出街逛御街">
             <span class="cloud-nav-chip is-out" aria-hidden="true">
-              <img class="cloud-nav-img" src="./assets/ui/cloud_nav_guide.png" alt="" decoding="async" />
+              <img loading="lazy" class="cloud-nav-img" src="./assets/ui/cloud_nav_guide.webp" alt="" decoding="async" />
               <span class="cloud-nav-label">出街</span>
             </span>
           </button>
@@ -148,7 +169,7 @@
               <span class="guest-profile-text" aria-hidden="true">客官档案</span>
             </button>
             <div class="guest-actor" id="guest-actor">
-              <img id="guest-portrait-img" src="./assets/portraits/scholar.png" alt="客官" class="guest-portrait-img" decoding="async" />
+              <img loading="lazy" id="guest-portrait-img" src="./assets/portraits/scholar.webp" alt="客官" class="guest-portrait-img" decoding="async" />
             </div>
 
             <div class="counter-fx-layer" id="counter-fx-layer"></div>
@@ -170,7 +191,7 @@
               </div>
 
               <div class="order-dish-row" id="order-dish-row">
-                <img id="order-dish-img" src="./assets/dishes/wine.png" alt="点单菜品" class="order-dish-thumb" />
+                <img decoding="async" loading="lazy" id="order-dish-img" src="./assets/dishes/wine.webp" alt="点单菜品" class="order-dish-thumb" />
                 <div class="order-dish-meta">
                   <strong id="order-dish-name">温酒</strong>
                   <div class="order-yield-line">
@@ -209,19 +230,19 @@
           <!-- 底部：4 菜宣纸无框案头条 -->
           <nav class="bottom-dish-shelf" aria-label="手作菜品选择">
             <button type="button" class="shelf-dish-btn pick-dish-mini" data-pick="wine">
-              <img src="./assets/dishes/wine.png" alt="温酒" />
+              <img decoding="async" loading="lazy" src="./assets/dishes/wine.webp" alt="温酒" />
               <span>温酒</span>
             </button>
             <button type="button" class="shelf-dish-btn pick-dish-mini" data-pick="meat">
-              <img src="./assets/dishes/meat.png" alt="炙羊肉" />
+              <img decoding="async" loading="lazy" src="./assets/dishes/meat.webp" alt="炙羊肉" />
               <span>炙羊肉</span>
             </button>
             <button type="button" class="shelf-dish-btn pick-dish-mini" data-pick="plum_wine">
-              <img src="./assets/dishes/plum_wine.png" alt="青梅酿" />
+              <img decoding="async" loading="lazy" src="./assets/dishes/plum_wine.webp" alt="青梅酿" />
               <span>青梅酿</span>
             </button>
             <button type="button" class="shelf-dish-btn pick-dish-mini" data-pick="osmanthus_cake">
-              <img src="./assets/dishes/osmanthus_cake.png" alt="桂花糕" />
+              <img decoding="async" loading="lazy" src="./assets/dishes/osmanthus_cake.webp" alt="桂花糕" />
               <span>桂花糕</span>
             </button>
           </nav>
@@ -242,12 +263,12 @@
           <div class="board-semantic-steps" id="board-semantic-steps" role="list" aria-label="制作进度"></div>
 
           <div class="board-stage" id="board-stage">
-            <img src="./assets/bg/cooking_board.jpg" alt="俯视水彩木案板" class="board-bg-img" />
+            <img decoding="async" loading="lazy" src="./assets/bg/cooking_board.webp" alt="俯视水彩木案板" class="board-bg-img" />
             <div class="board-lighting-focus" aria-hidden="true"></div>
             <canvas id="board-canvas"></canvas>
 
             <div class="board-tip-bubble" id="board-tip-bubble" role="status" aria-live="polite">
-              <img id="gesture-icon-img" class="gesture-icon-img" src="" alt="" style="display:none;" />
+              <img decoding="async" loading="lazy" id="gesture-icon-img" class="gesture-icon-img" src="" alt="" style="display:none;" />
               <span id="gesture-hint">请按下方高亮食材操作</span>
               <span class="tip-caret" aria-hidden="true"></span>
             </div>
@@ -267,10 +288,10 @@
 
         <!-- 视角 C：门外御街（浑然天成：四物件隐形光晕热区 + 画上书法地名 + 极简贴底状态条） -->
         <section class="view-layer outdoor-view" id="outdoor-view" aria-label="门外御街探索视角">
-          <img src="./assets/bg/outdoor_street_v2_mobile.jpg" alt="梦华楼门外碧蓝运河御街" class="outdoor-bg-img outdoor-bg-mobile is-day" />
-          <img src="./assets/bg/outdoor_street_v2_night_mobile.jpg" alt="梦华楼门外深夜运河御街" class="outdoor-bg-img outdoor-bg-mobile is-night" />
-          <img src="./assets/bg/outdoor_street_v2.jpg" alt="梦华楼门外碧蓝运河御街" class="outdoor-bg-img outdoor-bg-desktop is-day" />
-          <img src="./assets/bg/outdoor_street_v2_night.jpg" alt="梦华楼门外深夜运河御街" class="outdoor-bg-img outdoor-bg-desktop is-night" />
+          <img decoding="async" loading="lazy" src="./assets/bg/outdoor_street_v2_mobile.webp" alt="梦华楼门外碧蓝运河御街" class="outdoor-bg-img outdoor-bg-mobile is-day" />
+          <img decoding="async" loading="lazy" src="./assets/bg/outdoor_street_v2_night_mobile.webp" alt="梦华楼门外深夜运河御街" class="outdoor-bg-img outdoor-bg-mobile is-night" />
+          <img decoding="async" loading="lazy" src="./assets/bg/outdoor_street_v2.webp" alt="梦华楼门外碧蓝运河御街" class="outdoor-bg-img outdoor-bg-desktop is-day" />
+          <img decoding="async" loading="lazy" src="./assets/bg/outdoor_street_v2_night.webp" alt="梦华楼门外深夜运河御街" class="outdoor-bg-img outdoor-bg-desktop is-night" />
 
           <!-- v36 左上宋刻轻题跋（迷你朱印 + 轻墨地名） -->
           <div class="outdoor-place-ink" aria-label="当前地点：汴梁御街运河">
@@ -287,7 +308,7 @@
           <!-- v40【导航层】推门回店：镜像清透鎏金祥云向左归门引，与店内窗边「乘云出街」双向呼应 -->
           <button type="button" class="art-hotspot art-door" id="hotspot-return" aria-label="推门回店迎客" title="推门回店">
             <span class="cloud-nav-chip is-return" aria-hidden="true">
-              <img class="cloud-nav-img" src="./assets/ui/cloud_nav_guide.png" alt="" decoding="async" />
+              <img loading="lazy" class="cloud-nav-img" src="./assets/ui/cloud_nav_guide.webp" alt="" decoding="async" />
               <span class="cloud-nav-label">回店</span>
             </span>
           </button>
@@ -319,13 +340,10 @@
             </span>
           </button>
 
-          <!-- 仅首次进入显示的一次性淡字引导（保留DOM以兼容main.js） -->
-          <div class="outdoor-first-hint" id="outdoor-first-hint" aria-live="polite"></div>
-
           <!-- v38【随身层】暖蜜珀朱磦藏色线装手账 + 极轻玉白微霜小签（冷暖撞色告别融色与黑胶囊） -->
           <div class="outdoor-memo-dock" id="outdoor-workbench">
             <button type="button" class="memo-book-fab" id="btn-workbench" aria-label="展开今夜备忘手账" aria-expanded="false" aria-controls="workbench-panel">
-              <img class="memo-book-icon" src="./assets/ui/memo_book_amber_v2.png" alt="" aria-hidden="true" decoding="async" />
+              <img loading="lazy" class="memo-book-icon" src="./assets/ui/memo_book_amber_v2.webp" alt="" aria-hidden="true" decoding="async" />
               <span class="memo-book-badge">
                 <span class="memo-book-label">今夜备忘</span>
                 <span class="memo-dots" aria-hidden="true">
@@ -334,9 +352,6 @@
                 </span>
               </span>
             </button>
-            <!-- 隐藏兼容节点，保留供旧状态同步不报错 -->
-            <span id="pill-fine-mat" hidden>鲜料未采买</span>
-            <span id="pill-hot-dish" hidden>热销未打听</span>
           </div>
         </section>
       </div>
@@ -346,10 +361,10 @@
     <div class="avg-overlay" id="avg-overlay" role="dialog" aria-modal="true" aria-labelledby="avg-speaker-name">
       <div class="avg-backdrop" id="avg-backdrop"></div>
       <div class="avg-petal-layer" id="avg-petal-layer" aria-hidden="true"></div>
-      <img class="avg-boat-deco" id="avg-boat-deco" src="./assets/ui/boat_plum_deco.png" alt="" aria-hidden="true" decoding="async" />
+      <img loading="lazy" class="avg-boat-deco" id="avg-boat-deco" src="./assets/ui/boat_plum_deco.webp" alt="" aria-hidden="true" decoding="async" />
       <div class="avg-stage" id="avg-stage">
         <div class="avg-portrait-wrap">
-          <img id="avg-portrait-img" src="./assets/portraits/libai.png" alt="角色立绘" class="avg-portrait" decoding="async" />
+          <img loading="lazy" id="avg-portrait-img" src="./assets/portraits/libai.webp" alt="角色立绘" class="avg-portrait" decoding="async" />
         </div>
         <div class="avg-bottom-dock">
           <div class="avg-poem-card deckle-card" id="avg-poem-card">
@@ -399,7 +414,7 @@
           <button type="button" class="lantern-hang-btn is-celadon" id="btn-lantern-libai" data-lantern="libai">
             <span class="lantern-cord" aria-hidden="true"></span>
             <span class="lantern-glow-wrap">
-              <img class="lantern-img" src="./assets/ui/lantern_celadon.png" alt="诗酒青灯" decoding="async" />
+              <img loading="lazy" class="lantern-img" src="./assets/ui/lantern_celadon.webp" alt="诗酒青灯" decoding="async" />
             </span>
             <span class="lantern-tag-thread" aria-hidden="true"></span>
             <span class="lantern-tag-slip">
@@ -413,7 +428,7 @@
           <button type="button" class="lantern-hang-btn is-coral" id="btn-lantern-wife" data-lantern="wife">
             <span class="lantern-cord" aria-hidden="true"></span>
             <span class="lantern-glow-wrap">
-              <img class="lantern-img" src="./assets/ui/lantern_coral.png" alt="解愁暖灯" decoding="async" />
+              <img loading="lazy" class="lantern-img" src="./assets/ui/lantern_coral.webp" alt="解愁暖灯" decoding="async" />
             </span>
             <span class="lantern-tag-thread" aria-hidden="true"></span>
             <span class="lantern-tag-slip">
@@ -427,7 +442,7 @@
           <button type="button" class="lantern-hang-btn is-amber" id="btn-lantern-normal" data-lantern="normal">
             <span class="lantern-cord" aria-hidden="true"></span>
             <span class="lantern-glow-wrap">
-              <img class="lantern-img" src="./assets/ui/lantern_amber.png" alt="迎客常灯" decoding="async" />
+              <img loading="lazy" class="lantern-img" src="./assets/ui/lantern_amber.webp" alt="迎客常灯" decoding="async" />
             </span>
             <span class="lantern-tag-thread" aria-hidden="true"></span>
             <span class="lantern-tag-slip">
@@ -474,7 +489,7 @@
       <div class="intel-fan-inner">
         <div class="intel-hero-row">
           <div class="intel-peddler-wrap">
-            <img class="intel-peddler-img" src="./assets/portraits/peddler_v2.png" alt="御街货郎" decoding="async" />
+            <img loading="lazy" class="intel-peddler-img" src="./assets/portraits/peddler_v2.webp" alt="御街货郎" decoding="async" />
           </div>
           <div class="intel-speech-col">
             <div class="diegetic-brush-title is-compact" id="intel-fan-title">御街货郎 · 商情采买</div>
@@ -504,7 +519,7 @@
         </div>
 
         <div class="intel-fan-vessel">
-          <img class="intel-fan-deco" src="./assets/ui/lotus_fan_deco.png" alt="" aria-hidden="true" decoding="async" />
+          <img loading="lazy" class="intel-fan-deco" src="./assets/ui/lotus_fan_deco.webp" alt="" aria-hidden="true" decoding="async" />
           <div class="intel-contracts-grid">
             <button type="button" class="intel-contract-slip" id="btn-intel-hot">
               <span class="contract-seal" id="intel-hot-seal">商情</span>
@@ -646,7 +661,7 @@
           <button type="button" class="scroll-colophon-btn is-compact" id="btn-close-profile"><span class="colophon-label">合卷</span><span class="colophon-seal" aria-hidden="true">合</span></button>
         </div>
         <div class="profile-hero">
-          <img id="profile-guest-img" src="./assets/portraits/scholar.png" alt="客官立绘" class="profile-avatar" />
+          <img decoding="async" loading="lazy" id="profile-guest-img" src="./assets/portraits/scholar.webp" alt="客官立绘" class="profile-avatar" />
           <div class="profile-meta">
             <span class="order-badge" id="profile-guest-badge">书生</span>
             <span class="profile-count" id="profile-encounter-count">已相遇 1 次</span>
@@ -662,7 +677,7 @@
       <div class="scroll-rod-frame">
         <div class="scroll-sheet book-sheet">
         <div class="sheet-seal" id="ending-seal">三夜总评</div>
-        <img id="ending-emblem-img" class="ending-emblem-img" src="./assets/ui/ending_scholar.png" alt="结局徽章" />
+        <img decoding="async" loading="lazy" id="ending-emblem-img" class="ending-emblem-img" src="./assets/ui/ending_scholar.webp" alt="结局徽章" />
         <h2 class="sheet-title" id="ending-title">《一代儒商》</h2>
         <p class="sheet-review" id="ending-desc"></p>
         <div class="ledger-stats-grid">

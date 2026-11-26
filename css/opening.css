@@ -1,188 +1,348 @@
-.opening-screen { position: absolute; inset: 0; z-index: 80; background: #e8f0f2; overflow: hidden; transition: opacity 0.65s ease, visibility 0.65s ease; }
-.opening-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-.opening-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.15s ease; }
-.opening-slide.active { opacity: 1; }
-.opening-bg { width: 100%; height: 100%; object-fit: cover; object-position: center; }
-.ken-burns-1 { animation: kbStreet 12s ease-out forwards; }
-.ken-burns-2 { animation: kbTavern 12s ease-out forwards; }
-@keyframes kbStreet { 0% { transform: scale(1.0) translateY(0%); } 100% { transform: scale(1.1) translateY(-2%); } }
-@keyframes kbTavern { 0% { transform: scale(1.12) translateX(-2%); } 100% { transform: scale(1.02) translateX(2%); } }
-.opening-particles { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
-
-/* 清透藏青水雾渐层：暗部藏青而不脏褐，保留画境高明度通透感 */
-.opening-vignette {
-  position: absolute; inset: 0; z-index: 4; pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(168, 237, 228, 0.14) 0%,
-    transparent 28%,
-    transparent 58%,
-    rgba(44, 62, 107, 0.48) 100%
-  );
+/* ==========================================================================
+   开场序幕 · 方案A「一束光 · 穿巷见梦华」
+   70% 冷蓝紫阴影衬托 20% 暖阳劈光，极度克制，零廉价圆光斑，纯 GPU 丝滑过渡
+   ========================================================================== */
+.opening-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  background: #8da2be;
+  overflow: hidden;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
 }
+.opening-screen.hidden,
+.opening-screen.hidden * {
+  opacity: 0;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.opening-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.05s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.opening-slide.active {
+  opacity: 1;
+}
+
+.opening-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* 第一境：缓慢电影感沿光柱前推 */
+.alley-push-in {
+  transform: scale(1.0);
+  transform-origin: 54% 48%;
+  animation: alleyPushIn 4.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes alleyPushIn {
+  0%   { transform: scale(1.0) translateY(0%); }
+  100% { transform: scale(1.075) translateY(-1.2%); }
+}
+
+/* 极克制的斜阳微移光息（非圆光斑） */
+.alley-sunbeam-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    118deg,
+    transparent 24%,
+    rgba(255, 248, 214, 0.14) 44%,
+    rgba(255, 244, 196, 0.06) 58%,
+    transparent 74%
+  );
+  animation: sunbeamBreath 3.6s ease-in-out infinite alternate;
+}
+@keyframes sunbeamBreath {
+  0%   { opacity: 0.55; transform: translateX(-1.5%); }
+  100% { opacity: 1;    transform: translateX(1.5%); }
+}
+
+/* 左侧冷蓝紫阴影墙面上的疏朗李白诗影（像阳光投下的字影，留足呼吸感） */
+.alley-poem-projection {
+  position: absolute;
+  left: 7%;
+  top: 22%;
+  z-index: 3;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 14px;
+  pointer-events: none;
+}
+.alley-poem-col {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-serif);
+  font-size: 0.96rem;
+  font-weight: 600;
+  letter-spacing: 6px;
+  color: rgba(255, 250, 232, 0.9);
+  text-shadow: 0 2px 12px rgba(42, 60, 92, 0.45);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.95s ease, transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.alley-poem-col.col-2 {
+  margin-top: 26px;
+  transition-delay: 0.38s;
+}
+.alley-poem-projection.visible .alley-poem-col {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 第二境：冷影海棠花窗底图 */
+.opening-window-bg {
+  object-fit: cover;
+  object-position: center center;
+  transform: scale(1.01);
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.opening-screen.is-entering .opening-window-bg {
+  transform: scale(1.1);
+}
+
 .opening-skip-btn {
   position: absolute;
   top: max(14px, env(safe-area-inset-top));
   right: 14px;
-  z-index: 10;
-  background: linear-gradient(180deg, rgba(253, 252, 248, 0.88) 0%, rgba(238, 249, 246, 0.82) 100%);
+  z-index: 12;
+  min-height: 40px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  background: rgba(248, 250, 252, 0.78);
+  border-color: rgba(126, 148, 178, 0.52);
+  color: #2c3e6b;
   backdrop-filter: blur(8px);
 }
 
-/* 贴底清透玉白微霜字幕条：告别悬浮粗糙宣纸盒，让长街画境成为第一眼主角 */
-.opening-caption-box {
+.opening-tap-whisper {
   position: absolute;
   left: 50%;
+  bottom: max(26px, env(safe-area-inset-bottom));
   transform: translateX(-50%);
-  width: min(520px, calc(100% - 28px));
-  bottom: max(22px, env(safe-area-inset-bottom));
-  z-index: 8;
-  padding: 15px 18px 12px;
-  border-radius: 6px;
-  background: linear-gradient(180deg, rgba(253, 252, 248, 0.88) 0%, rgba(238, 248, 246, 0.84) 100%);
-  border: 1px solid rgba(196, 162, 102, 0.52);
-  border-top: 2px solid rgba(249, 200, 45, 0.72);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 12px 30px rgba(44, 62, 107, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.86);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
-.opening-caption-box.fade-out { opacity: 0; transform: translateX(-50%) translateY(8px); pointer-events: none; }
-.opening-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  margin-bottom: 8px;
-  font-size: 0.76rem;
-  letter-spacing: 2px;
-  color: #fffaf2;
-  font-weight: 700;
-  background: linear-gradient(135deg, #d85234 0%, #c8401f 100%);
-  border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(200, 64, 31, 0.28);
-}
-.opening-text { font-size: 1rem; line-height: 1.82; letter-spacing: 1px; color: #1c2d3a; min-height: 3.6em; font-weight: 600; }
-.opening-tap-hint { margin-top: 8px; text-align: right; font-size: 0.78rem; color: #4e6478; font-weight: 600; animation: blinkHint 1.6s ease-in-out infinite; }
-@keyframes blinkHint { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.95; } }
-
-/* 标题页：轻盈琉璃光雾，保持梦华楼暮色画境通透可见 */
-.opening-title-cta {
-  position: absolute; inset: 0; z-index: 9;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 24px; text-align: center;
-  background: radial-gradient(
-    circle at 50% 42%,
-    rgba(252, 252, 248, 0.68) 0%,
-    rgba(232, 246, 244, 0.56) 46%,
-    rgba(44, 62, 107, 0.42) 100%
-  );
-  backdrop-filter: blur(4px);
-  opacity: 0; visibility: hidden;
-  transition: opacity 0.6s ease, visibility 0.6s ease;
-}
-.opening-title-cta.visible { opacity: 1; visibility: visible; }
-.cta-seals { display: flex; gap: 10px; margin-bottom: 12px; }
-.paper-seal {
-  padding: 3px 11px;
-  border-radius: 3px;
-  border: 1px solid rgba(200, 64, 31, 0.58);
-  background: linear-gradient(180deg, rgba(255, 252, 246, 0.88) 0%, rgba(252, 240, 234, 0.78) 100%);
-  color: #c8401f;
-  font-family: var(--font-brush);
-  font-size: 0.96rem;
-  letter-spacing: 3px;
-  box-shadow: 0 2px 8px rgba(44, 62, 107, 0.14);
-}
-.cta-title {
-  font-family: var(--font-brush);
-  font-size: 4.35rem;
-  font-weight: 400;
-  letter-spacing: 10px;
-  color: #1c2e48;
-  text-shadow: 0 0 24px rgba(255, 253, 246, 0.96), 0 4px 16px rgba(168, 237, 228, 0.65);
-  line-height: 1.1;
-}
-.cta-sub {
+  z-index: 9;
   font-family: var(--font-serif);
-  font-size: 0.98rem;
-  font-weight: 700;
-  letter-spacing: 5px;
-  color: #2c3e6b;
-  text-shadow: 0 1px 8px rgba(255, 252, 246, 0.92);
-  margin: 8px 0 26px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: rgba(255, 251, 240, 0.88);
+  text-shadow: 0 1px 8px rgba(34, 48, 76, 0.55);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  animation: whisperFade 2s ease-in-out infinite;
+}
+.opening-tap-whisper.fade-out {
+  opacity: 0;
+  animation: none;
+}
+@keyframes whisperFade {
+  0%, 100% { opacity: 0.48; }
+  50%      { opacity: 0.95; }
 }
 
-/* 竖排清透朱磦鎏金琉璃主按钮（贴合基准色板：朱红 #C8401F + 明黄 #F9C82D + 藏青投影） */
-.vertical-ink-btn {
-  position: relative;
-  overflow: hidden;
-  appearance: none;
-  cursor: pointer;
+/* ================= 第二境终幕：冷影海棠花窗中轴「窗中字」竖排梦华楼 ================= */
+.opening-title-cta {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.85s ease;
+}
+.opening-title-cta.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 顶部冷影墙面微印（居海棠窗拱顶正上方） */
+.window-top-seals {
+  position: absolute;
+  top: max(12%, 72px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+.paper-seal {
+  padding: 2px 9px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 250, 240, 0.52);
+  background: rgba(44, 62, 107, 0.28);
+  color: rgba(255, 251, 242, 0.94);
+  font-family: var(--font-brush);
+  font-size: 0.82rem;
+  letter-spacing: 2px;
+  backdrop-filter: blur(4px);
+}
+
+/* 精准落在海棠花窗中央晴亮竖窗上半部（27%–55% 高度的纯晴黄留白内） */
+.window-pane-title-zone {
+  position: absolute;
+  top: 28.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.window-title-lockup {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+}
+
+.cta-title {
   writing-mode: vertical-rl;
   text-orientation: upright;
   font-family: var(--font-brush);
-  font-size: 1.56rem;
+  font-size: clamp(2.85rem, 8.4vw, 3.45rem);
+  font-weight: 400;
   letter-spacing: 8px;
-  color: #fffcf4;
-  padding: 20px 15px;
-  border-radius: 6px;
-  border: 1.5px solid rgba(249, 200, 45, 0.82);
-  background: linear-gradient(175deg, rgba(224, 92, 54, 0.92) 0%, rgba(200, 64, 31, 0.94) 60%, rgba(168, 46, 26, 0.96) 100%);
-  text-shadow: 0 1px 4px rgba(84, 22, 14, 0.55);
-  box-shadow:
-    0 12px 28px rgba(44, 62, 107, 0.34),
-    0 0 18px rgba(249, 200, 45, 0.36),
-    inset 0 1px 0 rgba(255, 246, 214, 0.68),
-    inset 0 0 0 2px rgba(255, 244, 216, 0.18);
-  transition: transform 0.14s ease, filter 0.16s ease, box-shadow 0.16s ease;
+  line-height: 1;
+  color: #243656;
+  text-shadow: 0 0 14px rgba(255, 254, 244, 0.92);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.8s ease 0.14s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.14s;
 }
-.vertical-ink-btn:hover,
-.vertical-ink-btn:focus-visible {
-  filter: brightness(1.06);
-  transform: translateY(-2px);
-  box-shadow:
-    0 14px 32px rgba(44, 62, 107, 0.38),
-    0 0 24px rgba(249, 200, 45, 0.56),
-    inset 0 1px 0 rgba(255, 248, 224, 0.85);
-  outline: none;
+.opening-title-cta.visible .cta-title {
+  opacity: 1;
+  transform: translateY(0);
 }
-.vertical-ink-btn:active { transform: scale(0.95); filter: brightness(1.04); }
 
-.cta-replay-btn {
-  margin-top: 14px;
+.cta-sub {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-serif);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #465c7e;
+  padding-top: 6px;
+  text-shadow: 0 0 8px rgba(255, 254, 246, 0.9);
+}
+
+/* 窗下冷蓝紫墙面上的朱磦飞白「扯帘迎客」主入口 */
+.window-bottom-actions {
+  position: absolute;
+  bottom: max(6.5%, env(safe-area-inset-bottom) + 22px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.curtain-start-btn {
+  position: relative;
+  overflow: visible;
   appearance: none;
   cursor: pointer;
-  min-height: 44px;
-  padding: 8px 16px;
+  min-width: 196px;
+  min-height: 52px;
+  padding: 10px 34px 12px;
+  border: none;
+  background: url('../assets/ui/brush_cta_coral.webp') center / 100% 100% no-repeat;
+  filter: drop-shadow(0 6px 18px rgba(44, 62, 107, 0.34));
+  color: #fffcf5;
+  font-family: var(--font-brush);
+  font-size: 1.42rem;
+  letter-spacing: 5px;
+  text-shadow: 0 1px 4px rgba(112, 30, 18, 0.52);
+  transition: transform 110ms ease, filter 150ms ease;
+}
+.curtain-start-btn:hover,
+.curtain-start-btn:focus-visible {
+  transform: translateY(-2px) scale(1.02);
+  filter: drop-shadow(0 8px 22px rgba(212, 102, 66, 0.46)) brightness(1.04);
+  outline: none;
+}
+.curtain-start-btn:active {
+  transform: scale(0.95);
+}
+
+.cta-replay-btn {
+  appearance: none;
+  cursor: pointer;
+  min-height: 40px;
+  padding: 4px 16px;
   background: transparent;
   border: none;
   font-family: var(--font-serif);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #2c3e6b;
-  text-shadow: 0 1px 6px rgba(255, 252, 246, 0.92);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 251, 242, 0.9);
+  text-shadow: 0 1px 6px rgba(44, 62, 107, 0.5);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
 
-.cta-era {
-  max-width: 316px;
-  font-family: var(--font-serif);
-  font-size: 0.84rem;
-  line-height: 1.68;
-  color: #1c2e3e;
-  margin: -12px auto 22px;
-  padding: 8px 14px;
-  border-radius: 5px;
-  background: linear-gradient(180deg, rgba(253, 252, 248, 0.82) 0%, rgba(238, 248, 246, 0.74) 100%);
-  border: 1px solid rgba(196, 162, 102, 0.42);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 14px rgba(44, 62, 107, 0.12);
+/* 扯帘迎客：左右薄纱轻掀转场 */
+.opening-curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 52%;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(252, 249, 242, 0.92) 0%,
+    rgba(232, 246, 243, 0.82) 70%,
+    rgba(232, 246, 243, 0) 100%
+  );
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.34s ease;
+}
+.opening-curtain-left {
+  left: 0;
+  transform: translateX(-100%);
+}
+.opening-curtain-right {
+  right: 0;
+  transform: translateX(100%) scaleX(-1);
+}
+.opening-screen.is-entering .opening-curtain-left {
+  opacity: 1;
+  transform: translateX(-12%);
+}
+.opening-screen.is-entering .opening-curtain-right {
+  opacity: 1;
+  transform: translateX(12%) scaleX(-1);
+}
+
+/* 桌面宽屏模式适配 */
+.app-frame.desktop-mode .opening-window-bg,
+.app-frame.desktop-mode .alley-push-in {
+  object-fit: contain;
+  background: #9bb0ca;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ken-burns-1,
-  .ken-burns-2,
-  .opening-tap-hint {
+  .alley-push-in,
+  .alley-sunbeam-sweep,
+  .opening-tap-whisper {
     animation: none;
+  }
+  .opening-slide,
+  .opening-title-cta,
+  .cta-title,
+  .alley-poem-col,
+  .opening-curtain {
+    transition: none;
   }
 }

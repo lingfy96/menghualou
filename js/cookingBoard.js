@@ -12,7 +12,6 @@ const semanticWrap = document.getElementById('board-semantic-steps');
 const tipBubble = document.getElementById('board-tip-bubble');
 const btnBoardHelp = document.getElementById('btn-board-help');
 const btnFinish = document.getElementById('btn-finish-dish');
-let tipFadeTimer = null;
 
 const loadedImgs = {};
 function preloadImg(key, src) {
@@ -21,23 +20,30 @@ function preloadImg(key, src) {
   loadedImgs[key] = im;
 }
 
-for (const [k, r] of Object.entries(BOARD_RECIPES)) {
-  preloadImg(`dish_${k}`, r.img);
+let boardAssetsPreloaded = false;
+function ensureBoardAssetsLoaded() {
+  if (boardAssetsPreloaded) return;
+  boardAssetsPreloaded = true;
+  for (const [k, r] of Object.entries(BOARD_RECIPES)) {
+    preloadImg(`dish_${k}`, r.img);
+  }
+  for (const st of [
+    'flour_mound', 'cake_base',
+    'raw_skewers', 'roasted_skewers',
+    'jar_empty', 'jar_filled',
+    'pot_cold', 'pot_hot'
+  ]) {
+    preloadImg(`state_${st}`, `./assets/states/${st}.webp`);
+  }
+  for (const tp of ['topping_osmanthus', 'topping_herbs', 'topping_plum', 'rock_sugar']) {
+    preloadImg(`prop_${tp}`, `./assets/props/${tp}.webp`);
+  }
+  for (const g of ['circle', 'paint', 'scatter', 'hold', 'swipe']) {
+    preloadImg(`gesture_${g}`, `./assets/ui/gesture_${g}.webp`);
+  }
 }
-for (const st of [
-  'flour_mound', 'cake_base',
-  'raw_skewers', 'roasted_skewers',
-  'jar_empty', 'jar_filled',
-  'pot_cold', 'pot_hot'
-]) {
-  preloadImg(`state_${st}`, `./assets/states/${st}.png`);
-}
-for (const tp of ['topping_osmanthus', 'topping_herbs', 'topping_plum', 'rock_sugar']) {
-  preloadImg(`prop_${tp}`, `./assets/props/${tp}.png`);
-}
-for (const g of ['circle', 'paint', 'scatter', 'hold', 'swipe']) {
-  preloadImg(`gesture_${g}`, `./assets/ui/gesture_${g}.png`);
-}
+const _scheduleBoardIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 2600));
+_scheduleBoardIdle(() => ensureBoardAssetsLoaded());
 
 // Offscreen canvases for real brush painting & bottom-up liquid fill masking
 const maskCanvas = document.createElement('canvas');
@@ -283,7 +289,7 @@ function renderStepUI() {
     const gKey = gMap[step.type];
     if (gestureIconImg) {
       if (gKey) {
-        gestureIconImg.src = `./assets/ui/gesture_${gKey}.png`;
+        gestureIconImg.src = `./assets/ui/gesture_${gKey}.webp`;
         gestureIconImg.classList.toggle('is-vertical', step.type === 'rub');
         gestureIconImg.style.display = 'block';
       } else {
@@ -793,6 +799,7 @@ btnFinish.addEventListener('click', (e) => {
 });
 
 export function startCookingBoard(dishKey, onDone) {
+  ensureBoardAssetsLoaded();
   activeDishKey = dishKey;
   stepIdx = 0;
   finished = false;
