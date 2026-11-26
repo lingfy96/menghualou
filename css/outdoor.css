@@ -1,0 +1,524 @@
+/* ==========================================================================
+   视角 C：门外御街 · v38「清透玉笺 · 三层分治 + 暖蜜珀朱磦手账」
+   全屏唯一高明度宋韵语言：玉白微霜 + 青釉细线 + 鎏金点睛 + 迷你圆印
+   ========================================================================== */
+.outdoor-view {
+  background: var(--out-sky-bg);
+  overflow: hidden;
+}
+
+.outdoor-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 200ms ease;
+}
+.outdoor-bg-desktop { display: none; }
+.app-frame.desktop-mode .outdoor-bg-mobile { display: none; }
+.app-frame.desktop-mode .outdoor-bg-desktop { display: block; }
+
+.outdoor-bg-img.is-day   { opacity: 1; }
+.outdoor-bg-img.is-night { opacity: 0; }
+.outdoor-view.is-late-night .outdoor-bg-img.is-day   { opacity: 0; }
+.outdoor-view.is-late-night .outdoor-bg-img.is-night { opacity: 1; }
+
+/* ================= 1. 左上角无框宋画卷首题跋（去圆角卡片与投影） ================= */
+.outdoor-place-ink {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  pointer-events: none;
+}
+.place-seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  background: rgba(168, 52, 40, 0.9);
+  color: #fff8ee;
+  font-family: var(--font-brush);
+  font-size: 0.76rem;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(84, 24, 18, 0.24);
+}
+.place-name {
+  font-family: var(--font-serif);
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  color: #243836;
+  text-shadow: 0 0 8px rgba(252, 249, 242, 0.96), 0 1px 2px rgba(252, 249, 242, 0.9);
+  transition: color 200ms ease, text-shadow 200ms ease;
+}
+.outdoor-view.is-late-night .place-name {
+  color: #f6efe0;
+  text-shadow: 0 1px 8px rgba(14, 20, 26, 0.85);
+}
+
+/* ================= 2. 热点坐标基座（保持大面积容错点击热区） ================= */
+.art-hotspot {
+  position: absolute;
+  min-width: 44px;
+  min-height: 44px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.art-hotspot:focus-visible { outline: none; }
+
+/* 手机竖屏 9:16 精准景物热区 */
+.art-door    { left: 5%;  top: 46%; width: 24%; height: 28%; justify-content: flex-start; }
+.art-banner  { left: 29%; top: 11%; width: 20%; height: 32%; }
+.art-walker  { left: 65%; top: 47%; width: 25%; height: 15%; }
+.art-lantern { left: 60%; top: 9%;  width: 34%; height: 24%; }
+
+/* 桌面宽屏 16:9 精准景物热区 */
+.app-frame.desktop-mode .art-door    { left: 9%;  top: 24%; width: 17%; height: 64%; justify-content: flex-start; }
+.app-frame.desktop-mode .art-banner  { left: 32%; top: 20%; width: 13%; height: 50%; }
+.app-frame.desktop-mode .art-walker  { left: 64%; top: 38%; width: 13%; height: 18%; }
+.app-frame.desktop-mode .art-lantern { left: 54%; top: 8%;  width: 17%; height: 32%; }
+
+
+
+/* ================= 4.【探索层】三大清透玉白微霜 4 字悬签（侧悬避让主体） ================= */
+.hotspot-pin {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  animation: pinSway 4.2s ease-in-out infinite;
+  transform-origin: top center;
+  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* 侧悬避让：不糊幌子中央、不糊灯笼正中、不糊书生面部 */
+.art-banner .hotspot-pin  { animation-delay: -0.6s; transform: translate(22px, 34px); }
+.art-walker .hotspot-pin  { animation-delay: -1.7s; transform: translate(34px, -24px); }
+.art-lantern .hotspot-pin { animation-delay: -2.8s; transform: translate(32px, 34px); }
+
+.app-frame.desktop-mode .art-banner .hotspot-pin  { transform: translate(28px, 36px); }
+.app-frame.desktop-mode .art-walker .hotspot-pin  { transform: translate(36px, -20px); }
+.app-frame.desktop-mode .art-lantern .hotspot-pin { transform: translate(42px, 36px); }
+
+@keyframes pinSway {
+  0%, 100% { rotate: -1deg; translate: 0 0; }
+  50%      { rotate: 1deg;  translate: 0 -2.5px; }
+}
+
+/* 宋韵细金圆环 + 极细垂丝（替代现代 RPG 菱形图标） */
+.pin-ring {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid #c8943e;
+  background: radial-gradient(circle, #fffaf0 0%, #f5d896 100%);
+  box-shadow: 0 0 8px rgba(232, 186, 98, 0.72);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.pin-ring::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(224, 178, 92, 0.72);
+  animation: ringPulse 3s ease-out infinite;
+}
+.art-walker .pin-ring::after  { animation-delay: -1s; }
+.art-lantern .pin-ring::after { animation-delay: -2s; }
+
+@keyframes ringPulse {
+  0%   { transform: scale(0.9); opacity: 0.78; }
+  75%  { transform: scale(2.1); opacity: 0; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+.pin-thread {
+  width: 1px;
+  height: 7px;
+  background: linear-gradient(to bottom, #c8943e, rgba(196, 152, 82, 0.45));
+}
+
+/* 清透玉白微霜 4 字悬签（与顶栏宣纸、原画藏色高明度完全同源） */
+.hotspot-tag {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  padding: 7px 5px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(253, 251, 246, 0.9) 0%, rgba(242, 249, 246, 0.82) 100%);
+  border: 1px solid rgba(196, 162, 102, 0.56);
+  box-shadow:
+    0 5px 14px rgba(28, 46, 44, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  line-height: 1.08;
+  color: #1e3331;
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+/* 商情备妥后转为极淡青釉玉色 */
+.art-banner.is-done .hotspot-tag {
+  background: linear-gradient(180deg, rgba(236, 250, 245, 0.92) 0%, rgba(214, 240, 232, 0.86) 100%);
+  border-color: rgba(84, 158, 138, 0.62);
+  color: #1c5447;
+}
+.art-banner.is-done .pin-ring {
+  border-color: #469682;
+  background: radial-gradient(circle, #f2fffb 0%, #9ee0cb 100%);
+  box-shadow: 0 0 8px rgba(102, 198, 170, 0.72);
+}
+
+/* 迷你圆印角标（候 / 妥）：取代生硬红方块 */
+.hotspot-micro-seal {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: -11px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-brush);
+  font-size: 0.7rem;
+  line-height: 1;
+  color: #fff9f0;
+  border: 1px solid rgba(255, 248, 236, 0.85);
+  box-shadow: 0 2px 6px rgba(34, 20, 16, 0.28);
+}
+.hotspot-micro-seal.is-cinnabar { background: rgba(176, 54, 42, 0.92); }
+.hotspot-micro-seal.is-celadon  { background: rgba(46, 126, 106, 0.92); }
+.hotspot-micro-seal.visible     { display: inline-flex; }
+
+/* Hover / Focus / Active 四态 */
+.art-hotspot:hover .pin-ring,
+.art-hotspot:focus-visible .pin-ring {
+  transform: scale(1.22);
+  box-shadow: 0 0 12px rgba(236, 190, 96, 0.95);
+}
+.art-hotspot:hover .hotspot-tag,
+.art-hotspot:focus-visible .hotspot-tag {
+  background: rgba(255, 253, 248, 0.97);
+  border-color: #d09a42;
+  box-shadow: 0 7px 18px rgba(212, 168, 86, 0.34), inset 0 0 0 1px #ffffff;
+}
+.art-hotspot:active .hotspot-pin {
+  scale: 0.95;
+}
+
+
+/* ================= 5. 风闻纸笺弹幕：基础定位与语义点 ================= */
+.rumor-danmu {
+  position: absolute;
+  left: 0; right: 0;
+  z-index: 6;
+  overflow: hidden;
+  pointer-events: none;
+}
+.rumor-lane { position: absolute; left: 0; right: 0; }
+.rumor-lane-a { top: 0; }
+.rumor-slip {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  box-shadow: none;
+  font-family: var(--font-brush), var(--font-serif);
+  line-height: 1.45;
+}
+.rumor-slip::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: 0 0 6px;
+  background: var(--song-gold);
+}
+.rumor-slip.tone-warn { color: var(--tone-warn); }
+.rumor-slip.tone-warn::before { background: var(--cinnabar); }
+.rumor-slip.tone-pos  { color: var(--tone-pos); }
+.rumor-slip.tone-pos::before  { background: var(--mint-deep); }
+
+/* ================= 6.【随身层】右下角暖蜜珀朱磦手账 + 清透玉白小签（零黑胶囊） ================= */
+.outdoor-memo-dock {
+  position: absolute;
+  right: 12px;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 9;
+  pointer-events: auto;
+}
+.app-frame.desktop-mode .outdoor-memo-dock {
+  right: 22px;
+  bottom: 20px;
+}
+
+.memo-book-fab {
+  appearance: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.memo-book-icon {
+  display: block;
+  width: 72px;
+  height: auto;
+  object-fit: contain;
+  /* 暖蜜珀封面与清透水光柔和拉出层次，不与青绿背景融色 */
+  filter: drop-shadow(0 6px 12px rgba(96, 46, 22, 0.28));
+  transition: transform 150ms ease, filter 150ms ease;
+}
+.app-frame.desktop-mode .memo-book-icon {
+  width: 86px;
+}
+
+/* 清透玉白微霜小签（彻底取代现代深黑胶囊） */
+.memo-book-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(253, 251, 246, 0.9) 0%, rgba(244, 249, 247, 0.84) 100%);
+  border: 1px solid rgba(200, 162, 102, 0.58);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 3px 10px rgba(28, 46, 44, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+}
+.memo-book-label {
+  font-family: var(--font-serif);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #203432;
+  white-space: nowrap;
+}
+.memo-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+/* 迷你青釉/鎏金小菱印（取代荧光绿圆点） */
+.memo-dot {
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  border-radius: 1px;
+  border: 1px solid rgba(188, 142, 72, 0.75);
+  background: rgba(255, 252, 244, 0.65);
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+.memo-dot.is-ready {
+  background: #358a76;
+  border-color: #266b5b;
+  box-shadow: 0 0 5px rgba(53, 138, 118, 0.55);
+}
+
+.memo-book-fab:hover .memo-book-icon,
+.memo-book-fab:focus-visible .memo-book-icon {
+  transform: translateY(-4px) scale(1.05);
+  filter: drop-shadow(0 10px 18px rgba(176, 92, 42, 0.38));
+}
+.memo-book-fab:hover .memo-book-badge,
+.memo-book-fab:focus-visible .memo-book-badge {
+  border-color: #cf963c;
+  background: rgba(255, 253, 248, 0.96);
+}
+.memo-book-fab:focus-visible { outline: none; }
+.memo-book-fab:active { transform: scale(0.95); }
+
+/* ================= 7. 居中正视角青玉木轴「今夜备忘手账」弹窗 ================= */
+.wb-scroll-sheet { text-align: left; }
+.wb-scroll-sheet .sheet-seal,
+.wb-scroll-sheet .sheet-title,
+.wb-time-sub {
+  display: block;
+  text-align: center;
+}
+.wb-scroll-sheet .sheet-seal { width: fit-content; margin: 0 auto 6px; }
+.wb-time-sub {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  letter-spacing: 1.5px;
+  margin: 4px 0 14px;
+}
+
+.wb-section-head {
+  font-family: var(--font-brush);
+  font-size: 1.12rem;
+  letter-spacing: 1.5px;
+  color: var(--cinnabar);
+  margin: 0 0 8px;
+}
+
+.wb-prep-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.wb-prep-cell {
+  padding: 11px 12px;
+  border-radius: 3px;
+  background: var(--xuan-paper-img) center / cover, rgba(248, 244, 234, 0.92);
+  border: 1px solid var(--ink-stroke-soft);
+  box-shadow: inset 0 0 0 2px rgba(248, 244, 234, 0.48);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.wb-prep-cell.is-ready {
+  border-color: rgba(43, 110, 94, 0.55);
+  background: linear-gradient(180deg, rgba(232, 246, 240, 0.72), rgba(248, 244, 234, 0.92));
+}
+.wb-prep-k { font-size: 0.75rem; color: var(--ink-muted); }
+.wb-prep-v { font-family: var(--font-serif); font-size: 0.94rem; font-weight: 800; color: var(--ink-text); }
+.wb-prep-cell.is-ready .wb-prep-v { color: var(--mint-deep); }
+.wb-prep-hint { font-size: 0.75rem; color: #8a5610; }
+
+.wb-rumor-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  border-radius: 3px;
+  background: var(--xuan-paper-img) center / cover, rgba(248, 244, 234, 0.9);
+  border: 1px solid var(--ink-stroke-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wb-rumor-list li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--ink-text);
+}
+.wb-rumor-list li::before {
+  content: '·';
+  position: absolute;
+  left: 2px;
+  top: 0;
+  font-weight: 900;
+  color: var(--song-gold);
+}
+.wb-rumor-list li.tone-pos { color: var(--mint-deep); font-weight: 600; }
+.wb-rumor-list li.tone-pos::before { color: var(--mint-deep); }
+.wb-rumor-list li.tone-warn { color: var(--cinnabar); font-weight: 600; }
+.wb-rumor-list li.tone-warn::before { color: var(--cinnabar); }
+
+.wb-close-btn { margin-top: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hotspot-pin,
+  .pin-ring::after { animation: none; }
+  .rumor-slip { left: 50%; transform: translateX(-50%); animation: rumorStatic 4s ease forwards; }
+  @keyframes rumorStatic { 0%, 100% { opacity: 0; } 12%, 88% { opacity: 1; } }
+}
+
+
+/* ================= v45 弹幕升级：开阔水面零遮挡航道 + 昼夜统一清透笔刷 + 17s舒缓漂行 ================= */
+.rumor-danmu {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+.rumor-lane { height: 34px; }
+.rumor-lane-b { top: 42px; }
+
+.app-frame.desktop-mode .rumor-lane { height: 36px; }
+.app-frame.desktop-mode .rumor-lane-b { top: 46px; }
+
+.rumor-slip {
+  padding: 7px 24px 7px 22px;
+  background: url('../assets/ui/silk_dialogue_stroke.png') center / 100% 100% no-repeat;
+  border: none;
+  border-radius: 0;
+  color: #1c3130;
+  font-size: 0.84rem;
+  letter-spacing: 0.8px;
+  filter: drop-shadow(0 4px 10px rgba(20, 42, 46, 0.2));
+  animation: rumorDriftSlow 17s linear forwards;
+}
+.rumor-slip.is-echo {
+  font-size: 0.82rem;
+  opacity: 0.92;
+  animation-delay: 5.5s;
+}
+
+/* 彻底废除深夜深灰圆角胶囊：昼夜统一清透玉白冰青笔刷，夜晚配柔和月光投影 */
+.outdoor-view.is-late-night .rumor-slip {
+  color: #1c3130;
+  background: url('../assets/ui/silk_dialogue_stroke.png') center / 100% 100% no-repeat;
+  border-radius: 0;
+  padding: 7px 24px 7px 22px;
+  backdrop-filter: none;
+  filter: drop-shadow(0 4px 14px rgba(12, 26, 42, 0.48));
+}
+.outdoor-view.is-late-night .rumor-slip.tone-warn { color: #9c2f24; }
+.outdoor-view.is-late-night .rumor-slip.tone-pos  { color: #1a5c4c; }
+
+@keyframes rumorDriftSlow {
+  0%   { transform: translateX(0); opacity: 0; }
+  12%  { opacity: 0.94; }
+  85%  { opacity: 0.94; }
+  100% { transform: translateX(calc(-100vw - 100%)); opacity: 0; }
+}
+
+
+/* ================= v46 彻底阻断隐藏态御街图层偷点案板「出品」按钮 ================= */
+.outdoor-view:not(.active),
+.outdoor-view:not(.active) *,
+.outdoor-view:not(.active) .outdoor-memo-dock {
+  pointer-events: none !important;
+}
+.outdoor-view.active .outdoor-memo-dock {
+  pointer-events: auto;
+}
+
+
+/* ================= v48 P1修复：弹幕以右下角手账高度为硬下限，全屏高矮零擦碰 ================= */
+.rumor-danmu {
+  top: auto;
+  bottom: 118px;
+  height: 78px;
+}
+.app-frame.desktop-mode .rumor-danmu {
+  top: auto;
+  bottom: 132px;
+  height: 84px;
+}

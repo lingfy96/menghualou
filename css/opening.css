@@ -1,0 +1,331 @@
+/* ==========================================================================
+   开场序幕：平笔藏色一镜到底（倾奁化瀑 → 太白诗砌楼柳 → 海棠花窗·窗中梦华）
+   ========================================================================== */
+.opening-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  background: #f5f3ec;
+  overflow: hidden;
+  transition: opacity 0.55s ease, visibility 0.55s ease;
+}
+.opening-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.opening-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.opening-slide.active {
+  opacity: 1;
+}
+
+.opening-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.ken-burns-1 {
+  animation: kbWaterfall 6.5s ease-out forwards;
+}
+@keyframes kbWaterfall {
+  0%   { transform: scale(1.06) translateY(-1.5%); }
+  100% { transform: scale(1.0) translateY(1.2%); }
+}
+
+/* 幕二底景：高明度阳光宣白 + 冰青丁香藏色微雾，衬托高密度太白诗字楼柳 */
+.opening-poetry-stage {
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 24%, rgba(255, 253, 246, 0.96) 0%, rgba(235, 248, 245, 0.92) 55%, rgba(218, 228, 244, 0.9) 100%);
+}
+
+/* 幕三花窗底图：铺满竖屏且居中对齐海棠窗中轴 */
+.opening-window-bg {
+  object-fit: cover;
+  object-position: center center;
+  transform: scale(1.02);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.opening-screen.is-entering .opening-window-bg {
+  transform: scale(1.12);
+}
+
+.opening-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.opening-skip-btn {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  right: 14px;
+  z-index: 12;
+  min-height: 40px;
+  padding: 6px 14px;
+  font-size: 0.92rem;
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.88) 0%, rgba(242, 248, 246, 0.8) 100%);
+  border-color: rgba(196, 152, 108, 0.62);
+  color: #2c3e6b;
+  backdrop-filter: blur(8px);
+}
+
+/* 幕一/幕二轻雅贴底诗签字幕 */
+.opening-caption-box {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(400px, calc(100% - 28px));
+  bottom: max(22px, env(safe-area-inset-bottom));
+  z-index: 9;
+  padding: 13px 16px 10px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.86) 0%, rgba(240, 248, 247, 0.82) 100%);
+  border: 1px solid rgba(212, 174, 128, 0.56);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 26px rgba(120, 134, 172, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.opening-caption-box.fade-out {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px);
+  pointer-events: none;
+}
+.opening-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  margin-bottom: 6px;
+  font-size: 0.74rem;
+  letter-spacing: 2px;
+  color: #fffaf4;
+  font-weight: 700;
+  background: linear-gradient(135deg, #e57a5c 0%, #c84c32 100%);
+  border-radius: 3px;
+}
+.opening-text {
+  font-size: 0.96rem;
+  line-height: 1.75;
+  letter-spacing: 1px;
+  color: #22334a;
+  min-height: 3.3em;
+  font-weight: 600;
+}
+.opening-tap-hint {
+  margin-top: 4px;
+  text-align: right;
+  font-size: 0.75rem;
+  color: #5b6e88;
+  font-weight: 600;
+  animation: blinkHint 1.6s ease-in-out infinite;
+}
+@keyframes blinkHint {
+  0%, 100% { opacity: 0.42; }
+  50%      { opacity: 0.96; }
+}
+
+/* ================= 幕三终幕：海棠花窗中轴「窗中字」竖排梦华楼 ================= */
+.opening-title-cta {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(14px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.75s ease;
+}
+.opening-title-cta.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 精准锚定在海棠花窗中央竖窗上半部清透晴青留白内 */
+.window-pane-title-zone {
+  margin-top: min(14.5vh, 118px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.cta-seals {
+  display: flex;
+  gap: 6px;
+}
+.paper-seal {
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid rgba(206, 92, 68, 0.56);
+  background: rgba(255, 252, 246, 0.78);
+  color: #b8422b;
+  font-family: var(--font-brush);
+  font-size: 0.76rem;
+  letter-spacing: 1.5px;
+  backdrop-filter: blur(4px);
+}
+
+.window-title-lockup {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cta-title {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-brush);
+  font-size: clamp(3.15rem, 9.2vw, 3.85rem);
+  font-weight: 400;
+  letter-spacing: 10px;
+  line-height: 1;
+  color: #20324e;
+  text-shadow:
+    0 0 18px rgba(255, 254, 250, 0.96),
+    0 2px 10px rgba(168, 237, 228, 0.62);
+  opacity: 0;
+  transform: translateY(-10px) scale(0.96);
+  transition: opacity 0.75s ease 0.12s, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+}
+.opening-title-cta.visible .cta-title {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.cta-sub {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-serif);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #3a5272;
+  padding-top: 8px;
+  text-shadow: 0 0 10px rgba(255, 254, 248, 0.95);
+}
+
+/* 窗下轻盈朱磦「扯帘迎客」主行动入口 */
+.window-bottom-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.curtain-start-btn {
+  position: relative;
+  overflow: visible;
+  appearance: none;
+  cursor: pointer;
+  min-width: 196px;
+  min-height: 52px;
+  padding: 10px 34px 12px;
+  border: none;
+  background: url('../assets/ui/brush_cta_coral.png') center / 100% 100% no-repeat;
+  filter: drop-shadow(0 6px 16px rgba(196, 84, 61, 0.34));
+  color: #fffcf5;
+  font-family: var(--font-brush);
+  font-size: 1.42rem;
+  letter-spacing: 5px;
+  text-shadow: 0 1px 4px rgba(112, 30, 18, 0.52);
+  transition: transform 120ms ease, filter 160ms ease;
+}
+.curtain-start-btn:hover,
+.curtain-start-btn:focus-visible {
+  transform: translateY(-2px) scale(1.02);
+  filter: drop-shadow(0 8px 20px rgba(226, 120, 74, 0.46)) brightness(1.04);
+  outline: none;
+}
+.curtain-start-btn:active {
+  transform: scale(0.95);
+}
+
+.cta-replay-btn {
+  appearance: none;
+  cursor: pointer;
+  min-height: 40px;
+  padding: 4px 16px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-serif);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #465b78;
+  text-shadow: 0 0 8px rgba(255, 253, 248, 0.92);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* 扯帘迎客：左右薄纱轻掀转场 */
+.opening-curtain {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 52%;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(252, 249, 242, 0.92) 0%,
+    rgba(232, 246, 243, 0.82) 70%,
+    rgba(232, 246, 243, 0) 100%
+  );
+  transition: transform 0.62s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.55s ease;
+}
+.opening-curtain-left {
+  left: 0;
+  transform: translateX(-100%);
+}
+.opening-curtain-right {
+  right: 0;
+  transform: translateX(100%) scaleX(-1);
+}
+.opening-screen.is-entering .opening-curtain-left {
+  opacity: 1;
+  transform: translateX(-12%);
+}
+.opening-screen.is-entering .opening-curtain-right {
+  opacity: 1;
+  transform: translateX(12%) scaleX(-1);
+}
+
+/* 桌面宽屏模式适配（竖向花窗居中铺展） */
+.app-frame.desktop-mode .opening-window-bg {
+  object-fit: contain;
+  background: linear-gradient(90deg, #ecebf5 0%, #f5f3ec 50%, #f8f3ea 100%);
+}
+.app-frame.desktop-mode .window-pane-title-zone {
+  margin-top: 12vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ken-burns-1,
+  .opening-tap-hint {
+    animation: none;
+  }
+  .opening-slide,
+  .opening-title-cta,
+  .cta-title,
+  .opening-curtain {
+    transition: none;
+  }
+}

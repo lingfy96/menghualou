@@ -1,0 +1,472 @@
+/* 做饭界面：横向工序带 + 单一高亮 + 四步语义进度 + 极简底部操作条 */
+.board-view {
+  background: var(--xuan-bg);
+  display: flex;
+  flex-direction: column;
+  --edge-pad: 6%;
+  --cinnabar-active: #b93628;
+  --text-strong: #26211c;
+  --text-secondary: #594f44;
+}
+
+/* 1. 顶部次要标题栏（字号 <= 正文 1.8x，非页面主角；回柜台为描边次要按钮） */
+.board-top-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px var(--edge-pad);
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.96);
+  border-bottom: 1px solid rgba(168, 152, 126, 0.35);
+  z-index: 10;
+}
+
+.board-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.board-dish-title {
+  font-family: var(--font-brush);
+  font-size: 22px; /* 14px 正文的 1.57x，克制不抢焦 */
+  font-weight: 400;
+  color: var(--text-strong);
+  letter-spacing: 1.5px;
+  line-height: 1.2;
+}
+
+.board-pause-pill {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.board-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* 次要层级描边文字按钮（禁止红色实心） */
+.board-outline-btn {
+  appearance: none;
+  cursor: pointer;
+  min-height: 44px; min-width: 44px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  border: 1.5px solid #8f8270;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.94);
+  color: var(--text-strong);
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 80ms ease, background-color 120ms ease;
+}
+.board-outline-btn:active {
+  transform: scale(0.95);
+  background: rgba(235, 229, 216, 0.96);
+}
+
+/* 2. 四步语义进度条（高度 <= 40px，横向居中，不抢焦） */
+.board-semantic-steps {
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 var(--edge-pad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.94);
+  border-bottom: 1px solid rgba(168, 152, 126, 0.25);
+  z-index: 9;
+}
+
+.sem-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #594f44;
+  background: rgba(236, 232, 222, 0.72);
+  border: 1.5px solid transparent;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.sem-step.done {
+  background: var(--cinnabar-active);
+  color: #fffaf2;
+  border-color: var(--cinnabar-active);
+}
+
+.sem-step.active {
+  background: rgba(255, 252, 245, 0.96);
+  color: var(--cinnabar-active);
+  border-color: var(--cinnabar-active);
+  box-shadow: 0 0 8px rgba(185, 54, 40, 0.22);
+}
+
+.sem-sep {
+  font-size: 12px;
+  color: #b0a390;
+}
+
+/* 3. 案板主舞台：中央加工区提亮，四周轻微压暗 */
+.board-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.board-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 用柔和光影突出中央加工区，不用硬线框/色块 */
+.board-lighting-focus {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 52% 46% at 50% 42%,
+    rgba(255, 252, 240, 0.16) 0%,
+    rgba(255, 250, 236, 0.04) 55%,
+    rgba(42, 34, 26, 0.24) 100%
+  );
+}
+
+#board-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  touch-action: none;
+}
+
+/* 4. 一次性教学气泡（米白 >=90% 不透明底，克制不遮挡道具，3秒自动淡出） */
+.board-tip-bubble {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  max-width: calc(100% - 12%);
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  border-radius: 3px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.96);
+  border: 1px solid #c4b59a;
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(46, 38, 30, 0.16);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.board-tip-bubble.faded {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-6px);
+}
+
+.tip-caret {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.96);
+  border-right: 1px solid #c4b59a;
+  border-bottom: 1px solid #c4b59a;
+}
+
+/* 5. 横向工序带：左→右等距单向排列，距屏幕边缘 >= 6%，不裁切 */
+.board-props-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  z-index: 5;
+  padding: 0 var(--edge-pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  pointer-events: none;
+}
+
+/* 单个道具按钮：热区 >= 48x48dp，自适应尺寸，永不裁切 */
+.board-prop-btn {
+  position: relative;
+  flex: 1 1 0;
+  max-width: 112px;
+  min-width: 56px;
+  min-height: 56px;
+  aspect-ratio: 1 / 1;
+  padding: 6px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: rgba(250, 248, 242, 0.12);
+  pointer-events: auto;
+  appearance: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 90ms ease, opacity 180ms ease, filter 180ms ease, border-color 180ms ease;
+}
+
+.board-prop-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 8px rgba(48, 42, 34, 0.26));
+  pointer-events: none;
+}
+
+/* 唯一高亮态：朱红细描边(2px) + 每 1.6s 一次 4px 上下浮动 + 极淡暖光 */
+.board-prop-btn.highlight {
+  border-color: var(--cinnabar-active);
+  background: rgba(255, 250, 240, 0.45);
+  box-shadow: 0 4px 14px rgba(223, 166, 66, 0.28);
+  animation: propGentleFloat 1.6s ease-in-out infinite;
+}
+
+@keyframes propGentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.board-prop-btn:active {
+  transform: scale(0.93);
+}
+
+/* 飞入案板倾倒瞬间（< 250ms 节奏） */
+.board-prop-btn.flying {
+  transform: translateY(-48px) scale(1.12) rotate(-18deg);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 20;
+}
+
+/* 已完成：降饱和 + 不透明度 60% + 打勾 */
+.board-prop-btn.used {
+  opacity: 0.6;
+  filter: saturate(0.35);
+  pointer-events: none;
+}
+
+.prop-done-check {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cinnabar-active);
+  color: #fffaf2;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 未解锁：降饱和且不可点 */
+.board-prop-btn.locked {
+  opacity: 0.48;
+  filter: saturate(0.25);
+  pointer-events: none;
+}
+
+/* 6. 底部操作条（72-88px）：仅左端返回圆钮 + 右端唯一主按钮“出品” */
+.board-footer {
+  flex-shrink: 0;
+  height: 78px;
+  padding: 0 var(--edge-pad) env(safe-area-inset-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.96);
+  border-top: 1px solid rgba(168, 152, 126, 0.4);
+  z-index: 10;
+}
+
+.board-back-circle {
+  appearance: none;
+  cursor: pointer;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid #a89b88;
+  background: rgba(250, 248, 242, 0.9);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 80ms ease, background-color 120ms ease;
+}
+.board-back-circle:active {
+  transform: scale(0.92);
+  background: rgba(235, 229, 216, 0.96);
+}
+
+/* 唯一主按钮“出品”：朱红方形印章式 */
+.board-serve-seal {
+  position: relative;
+  appearance: none;
+  cursor: pointer;
+  min-width: 102px;
+  height: 56px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 0;
+  background: var(--seal-bg-img) center / 100% 100% no-repeat;
+  filter: var(--seal-drop-shadow);
+  color: var(--xuan-bg);
+  font-family: var(--font-brush);
+  font-size: 22px;
+  letter-spacing: 4px;
+  text-shadow: 0 1px 2px rgba(72, 16, 10, 0.4);
+  transition: transform 80ms ease, opacity 180ms ease, filter 180ms ease;
+}
+
+.board-serve-seal:disabled {
+  opacity: 0.38;
+  filter: grayscale(0.85);
+  cursor: not-allowed;
+  animation: none;
+}
+
+.board-serve-seal.ready {
+  animation: sealBreathe 1.6s ease-in-out infinite;
+}
+
+@keyframes sealBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* 印章盖下反馈（80ms < 100ms） */
+.board-serve-seal:not(:disabled):active,
+.board-serve-seal.stamped {
+  transform: scale(0.9);
+  animation: none;
+}
+
+.board-tip-bubble.pulse-hint {
+  animation: tipPulse 320ms ease;
+}
+@keyframes tipPulse {
+  0% { transform: translateX(-50%) scale(0.97); }
+  50% { transform: translateX(-50%) scale(1.02); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+.gesture-icon-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transition: transform 180ms ease;
+}
+.gesture-icon-img.is-vertical {
+  transform: rotate(90deg);
+}
+
+
+/* ================= v47 P1修复：案板道具「属于画」去贴纸框 + 出品按钮原生4:1笔触零拉伸 ================= */
+.board-prop-btn {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+}
+.board-prop-btn::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 232, 166, 0.72) 0%, rgba(168, 237, 228, 0.28) 46%, transparent 74%);
+  opacity: 0;
+  transform: scale(0.88);
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 220ms ease;
+}
+.board-prop-btn img {
+  position: relative;
+  z-index: 1;
+}
+.board-prop-btn.highlight {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  animation: propGentleFloat 2.1s ease-in-out infinite;
+}
+.board-prop-btn.highlight::before {
+  opacity: 1;
+  transform: scale(1.06);
+  animation: propHaloBreathe 2.1s ease-in-out infinite;
+}
+.board-prop-btn.highlight img {
+  filter: drop-shadow(0 0 8px rgba(249, 200, 45, 0.58)) drop-shadow(0 6px 10px rgba(48, 38, 28, 0.26));
+}
+@keyframes propHaloBreathe {
+  0%, 100% { opacity: 0.68; transform: scale(0.96); }
+  50%      { opacity: 1;    transform: scale(1.1); }
+}
+
+.prop-done-check {
+  z-index: 2;
+  background: rgba(46, 126, 106, 0.92);
+  border: 1px solid rgba(255, 248, 236, 0.88);
+  box-shadow: 0 2px 6px rgba(24, 48, 42, 0.28);
+}
+
+/* 出品按钮：与「开启第2夜」同源的 4:1 珊瑚朱磦鎏金飞白笔触，彻底杜绝方章横向拉伸 */
+.board-serve-seal {
+  min-width: 142px;
+  height: 52px;
+  padding: 0 24px 2px 20px;
+  background: url('../assets/ui/brush_cta_coral.png') center / 100% 100% no-repeat;
+  filter: drop-shadow(0 5px 12px rgba(176, 54, 40, 0.26));
+  color: #fffaf2;
+  font-size: 21px;
+  letter-spacing: 5px;
+  text-shadow: 0 1px 4px rgba(114, 26, 16, 0.62);
+}
+.board-serve-seal.ready {
+  filter: drop-shadow(0 6px 16px rgba(212, 120, 64, 0.42)) brightness(1.04);
+  animation: sealBreathe 1.9s ease-in-out infinite;
+}
+.board-serve-seal:disabled {
+  opacity: 0.36;
+  filter: grayscale(0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-prop-btn.highlight,
+  .board-prop-btn.highlight::before,
+  .board-serve-seal.ready {
+    animation: none;
+  }
+}

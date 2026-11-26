@@ -1,0 +1,379 @@
+/* ==========================================================================
+   《梦华楼》纯正古风 AVG / 经营 UI 组件规范 (v15)
+   - 材质：月白宣纸肌理（摒弃纯色块与现代直角卡片）
+   - 描边：水墨虚实双细线 + 自然撕边毛边
+   - 强调色：朱砂印泥红（主行动）+ 黛青墨绿（选中/次级）
+   - 字体：毛笔行楷（标题/印章）+ 宋刻宋体（正文）
+   - 动效：所有弹窗与按钮具备进入/退出水墨晕染或卷轴展开动效
+   ========================================================================== */
+:root {
+  --xuan-bg: #f8f4ea;
+  --xuan-paper-img: url('../assets/bg/xuan_paper.jpg');
+  --xuan-pine-img: url('../assets/bg/xuan_pine.jpg');
+  --seal-bg-img: url('../assets/ui/cinnabar_seal.png');
+  --seal-drop-shadow: drop-shadow(-1px 3px 6px rgba(102, 24, 18, 0.28));
+  --seal-riddle-filter: hue-rotate(155deg) saturate(0.75) brightness(0.92);
+
+  --ink-text: #2a241e;
+  --ink-muted: #655a4e;
+  --ink-stroke: rgba(74, 63, 52, 0.42);
+  --ink-stroke-soft: rgba(126, 112, 94, 0.34);
+
+  --mint-deep: #3a7568;
+  --cinnabar: #a83226;
+  --cinnabar-dark: #822017;
+
+  /* 温润宋画装裱风基础色板（取自水彩原画：暖木褐 / 青瓷绿 / 灯笼珊瑚朱 / 半透暖宣） */
+  --song-paper: rgba(249, 244, 234, 0.90);
+  --song-wood: #6e523a;
+  --song-wood-line: rgba(126, 98, 70, 0.42);
+  --song-celadon: #3f7c70;
+  --song-gold: #8a5b12;
+
+  /* 御街模块专用语义变量（全量走 CSS 变量，禁止硬编码） */
+  --song-paper-bright: rgba(252, 248, 240, 0.96);
+  --out-sky-bg: #d8e9e4;
+
+  --shadow-ink: -2px 6px 18px rgba(48, 39, 30, 0.18);
+  --font-brush: 'Ma Shan Zheng', 'STKaiti', 'KaiTi', cursive, serif;
+  --font-serif: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+
+  /* v26 统一「宣纸笺」语言：所有提示类信息共用一套材质 */
+  --slip-bg: var(--xuan-paper-img) center / cover, var(--song-paper-bright);
+  --slip-border: 1px solid var(--song-wood-line);
+  --slip-radius: 3px;
+  --slip-shadow: 0 2px 8px rgba(52, 38, 24, 0.12);
+  --fs-status: 0.82rem;
+  --tone-neutral: #3C2F24;
+  --tone-pos: var(--song-celadon);
+  --tone-warn: var(--cinnabar);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-serif);
+  color: var(--ink-text);
+  background: radial-gradient(circle at 50% 35%, #ece7da 0%, #dcd5c5 100%);
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-frame {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  height: 100dvh;
+  max-height: 920px;
+  overflow: hidden;
+  background: var(--xuan-bg);
+  box-shadow: 0 24px 60px rgba(48, 39, 30, 0.26), 0 0 0 1px rgba(154, 138, 114, 0.65);
+  transition: max-width 240ms ease, max-height 240ms ease;
+}
+
+.app-frame.desktop-mode {
+  max-width: 1180px;
+  max-height: 760px;
+  width: 95vw;
+  height: 92dvh;
+  border-radius: 6px;
+}
+
+@media (max-width: 520px) {
+  .app-frame, .app-frame.desktop-mode {
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* ================= 1. 宣纸与水墨描边基础组件 ================= */
+/* 宣纸自然撕边（上下毛边） */
+.deckle-scroll {
+  clip-path: polygon(
+    0% 3px, 4% 0%, 11% 2px, 19% 0%, 28% 3px, 37% 0%, 48% 2px, 58% 0%, 69% 3px, 79% 0%, 89% 2px, 96% 0%, 100% 3px,
+    100% calc(100% - 3px), 95% 100%, 87% calc(100% - 2px), 76% 100%, 66% calc(100% - 3px), 54% 100%, 43% calc(100% - 2px), 31% 100%, 20% calc(100% - 3px), 9% 100%, 3% calc(100% - 2px), 0% calc(100% - 3px)
+  );
+}
+
+/* 水墨双框宣纸卡片（摒弃现代直角白卡） */
+.deckle-card {
+  position: relative;
+  background: var(--xuan-pine-img) center/cover, var(--xuan-bg);
+  border: 1px solid var(--ink-stroke);
+  border-radius: 2px;
+  box-shadow:
+    var(--shadow-ink),
+    inset 0 0 0 3px rgba(248, 244, 234, 0.6),
+    inset 0 0 0 4px var(--ink-stroke-soft);
+}
+
+/* ================= 2. 印章主按钮 + 水墨晕染点击反馈 ================= */
+.seal-btn {
+  position: relative;
+  overflow: visible;
+  min-height: 44px; min-width: 44px;
+  display: inline-flex; align-items: center; justify-content: center;
+  appearance: none;
+  cursor: pointer;
+  font-family: var(--font-brush);
+  font-size: 1rem;
+  letter-spacing: 2.5px;
+  padding: 8px 18px;
+}
+
+.seal-btn:active:not(:disabled) {
+  transform: scale(0.93);
+}
+
+/* 全局水墨晕染涟漪粒子（JS 动态注入至所有按钮） */
+.ink-ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.15);
+  background: radial-gradient(circle, rgba(42, 36, 30, 0.28) 0%, rgba(42, 36, 30, 0.12) 48%, transparent 72%);
+  animation: inkRippleBloom 360ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  z-index: 4;
+}
+
+.seal-btn .ink-ripple,
+.big-cinnabar-seal .ink-ripple,
+.board-serve-seal .ink-ripple,
+.vertical-ink-btn .ink-ripple {
+  background: radial-gradient(circle, rgba(255, 244, 224, 0.42) 0%, rgba(255, 228, 198, 0.16) 50%, transparent 72%);
+}
+
+@keyframes inkRippleBloom {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(0.15);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.4);
+  }
+}
+
+/* ================= 3. 通用水墨晕染 / 卷轴展开 进入与退出关键帧 ================= */
+/* 卷轴上下展开（进入） */
+@keyframes scrollUnrollIn {
+  0% {
+    opacity: 0;
+    clip-path: inset(48% 0 48% 0);
+    transform: scaleY(0.92);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: scaleY(1);
+    filter: blur(0);
+  }
+}
+
+/* 卷轴上下收卷（退出） */
+@keyframes scrollRollOut {
+  0% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: scaleY(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    clip-path: inset(48% 0 48% 0);
+    transform: scaleY(0.94);
+    filter: blur(2px);
+  }
+}
+
+/* 水墨晕染进入（AVG对话/卡片） */
+@keyframes inkWashIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* 水墨散逸退出 */
+@keyframes inkWashOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+    filter: blur(4px);
+  }
+}
+
+
+/* ================= v39 方案1：主次分治按钮系统（杜绝方章拉伸失真） ================= */
+
+/* 1. 短操作按钮（跳过序幕 / 账本升级 XX两）：纯 CSS 宋刻清透双朱线印框，任意宽度零模糊 */
+.seal-btn {
+  color: #a63428;
+  background: linear-gradient(180deg, rgba(253, 250, 243, 0.94) 0%, rgba(248, 240, 228, 0.88) 100%);
+  border: 1.5px solid rgba(176, 54, 42, 0.72);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 2px rgba(253, 250, 243, 0.92),
+    inset 0 0 0 3px rgba(176, 54, 42, 0.28),
+    0 2px 6px rgba(96, 36, 26, 0.12);
+  filter: none;
+  text-shadow: none;
+  transition: transform 90ms ease, background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+.seal-btn:hover:not(:disabled),
+.seal-btn:focus-visible:not(:disabled) {
+  color: #fffaf0;
+  background: linear-gradient(135deg, #c95242 0%, #a8362a 100%);
+  border-color: #9e2f24;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 244, 228, 0.26),
+    0 4px 12px rgba(168, 54, 42, 0.28);
+  filter: none;
+  outline: none;
+}
+.seal-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  color: #7c7166;
+  border-color: rgba(138, 124, 110, 0.45);
+  box-shadow: none;
+}
+
+/* 2. 核心推进主按钮（开启第2夜 / 换个活法）：原生 4:1 清透珊瑚朱磦鎏金飞白笔触，零拉伸失真 */
+.seal-btn.sheet-main-btn {
+  width: min(300px, 94%);
+  min-height: 56px;
+  margin: 4px auto 0;
+  display: flex;
+  padding: 10px 28px 12px 24px;
+  border: none;
+  border-radius: 0;
+  background: url('../assets/ui/brush_cta_coral.png') center / 100% 100% no-repeat;
+  box-shadow: none;
+  color: #fffaf2;
+  font-size: 1.24rem;
+  letter-spacing: 3px;
+  text-shadow: 0 1px 4px rgba(114, 26, 16, 0.62);
+  filter: drop-shadow(0 5px 12px rgba(176, 54, 40, 0.26));
+}
+.seal-btn.sheet-main-btn:hover:not(:disabled),
+.seal-btn.sheet-main-btn:focus-visible:not(:disabled) {
+  background: url('../assets/ui/brush_cta_coral.png') center / 100% 100% no-repeat;
+  border: none;
+  box-shadow: none;
+  color: #ffffff;
+  filter: drop-shadow(0 8px 18px rgba(212, 120, 64, 0.42)) brightness(1.05);
+  transform: translateY(-1px);
+}
+.seal-btn.sheet-main-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* 3. 纯关闭/合卷按钮（合卷归街 / 典故与档案合卷）：卷尾清雅落款细线 + 迷你朱砂圆印 */
+.scroll-colophon-btn {
+  appearance: none;
+  cursor: pointer;
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 6px;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #243836;
+  transition: transform 100ms ease, color 140ms ease;
+}
+.scroll-colophon-btn.is-compact {
+  width: auto;
+  min-width: 72px;
+  min-height: 44px;
+  padding: 6px 10px;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(186, 152, 98, 0.45);
+  background: rgba(252, 249, 242, 0.72);
+}
+.colophon-line {
+  flex: 1;
+  height: 1px;
+  max-width: 96px;
+  background: linear-gradient(90deg, transparent 0%, rgba(186, 148, 86, 0.72) 100%);
+}
+.colophon-line:last-child {
+  background: linear-gradient(90deg, rgba(186, 148, 86, 0.72) 0%, transparent 100%);
+}
+.colophon-label {
+  font-family: var(--font-brush);
+  font-size: 1.18rem;
+  letter-spacing: 3px;
+  color: #243836;
+  transition: color 140ms ease;
+}
+.scroll-colophon-btn.is-compact .colophon-label {
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+.colophon-seal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 50%;
+  background: rgba(176, 54, 42, 0.9);
+  color: #fff9f0;
+  border: 1px solid rgba(255, 242, 224, 0.85);
+  font-family: var(--font-brush);
+  font-size: 0.76rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(146, 40, 30, 0.24);
+  transition: transform 140ms ease, background 140ms ease;
+}
+.scroll-colophon-btn:hover .colophon-label,
+.scroll-colophon-btn:focus-visible .colophon-label {
+  color: #a63428;
+}
+.scroll-colophon-btn:hover .colophon-seal,
+.scroll-colophon-btn:focus-visible .colophon-seal {
+  transform: scale(1.1);
+  background: #be3d2f;
+}
+.scroll-colophon-btn.is-compact:hover,
+.scroll-colophon-btn.is-compact:focus-visible {
+  border-color: rgba(176, 54, 42, 0.58);
+  background: rgba(255, 252, 246, 0.95);
+}
+.scroll-colophon-btn:focus-visible { outline: none; }
+.scroll-colophon-btn:active { transform: scale(0.96); }

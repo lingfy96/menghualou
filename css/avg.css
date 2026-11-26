@@ -1,0 +1,1909 @@
+/* ================= AVG 对话层：水墨晕染进出 + 宣纸松鹤卷轴 ================= */
+.avg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  display: none;
+  flex-direction: column;
+}
+.avg-overlay.open {
+  display: flex;
+}
+.avg-overlay.open .avg-backdrop {
+  animation: backdropInkIn 240ms ease forwards;
+}
+.avg-overlay.open .avg-bottom-dock {
+  animation: inkWashIn 260ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.avg-overlay.closing .avg-backdrop {
+  animation: backdropInkOut 220ms ease forwards;
+}
+.avg-overlay.closing .avg-bottom-dock,
+.avg-overlay.closing .avg-portrait-wrap {
+  animation: inkWashOut 220ms ease forwards;
+}
+
+@keyframes backdropInkIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes backdropInkOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.avg-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(248, 244, 234, 0.42), rgba(42, 36, 30, 0.8) 85%);
+  backdrop-filter: blur(6px);
+}
+
+.avg-stage {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+  padding: max(10px, env(safe-area-inset-top)) 14px max(16px, env(safe-area-inset-bottom));
+}
+
+.avg-portrait-wrap {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 160px;
+  margin-bottom: -18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.avg-portrait {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-height: 100%;
+  max-width: 90%;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(-3px 10px 22px rgba(34, 28, 22, 0.34));
+  animation: inkWashIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.avg-bottom-dock {
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.avg-poem-card {
+  display: none;
+  margin: 0 auto 8px;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: center;
+}
+.avg-poem-card.visible {
+  display: block;
+  animation: scrollUnrollIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.poem-tag { font-size: 0.75rem; letter-spacing: 2px; color: var(--cinnabar); margin-bottom: 2px; font-weight: 700; }
+.poem-lines { font-family: var(--font-brush); font-size: 1.7rem; line-height: 1.3; letter-spacing: 4px; color: var(--ink-text); }
+.poem-note { margin-top: 4px; font-size: 0.75rem; color: var(--mint-deep); font-weight: 600; }
+
+/* 宣纸水墨分支选项（无纯白方块，带水墨晕染进场与点击涟漪） */
+.avg-choices { display: flex; flex-direction: column; gap: 7px; margin-bottom: 9px; }
+.avg-choice-btn {
+  position: relative;
+  overflow: hidden;
+  appearance: none;
+  cursor: pointer;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  border-radius: 2px;
+  border: 1px solid var(--ink-stroke);
+  border-left: 4px solid var(--cinnabar);
+  background: var(--xuan-paper-img) center/cover, var(--xuan-bg);
+  color: var(--ink-text);
+  box-shadow: -2px 5px 14px rgba(38, 30, 24, 0.24), inset 0 0 0 2px rgba(248, 244, 234, 0.5);
+  transition: transform 90ms ease, border-left-width 120ms ease, filter 120ms ease;
+  animation: inkWashIn 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.avg-choice-btn:nth-child(2) { animation-delay: 60ms; }
+.avg-choice-btn:nth-child(3) { animation-delay: 120ms; }
+.avg-choice-btn:hover { border-left-width: 7px; filter: brightness(1.02); }
+.avg-choice-btn:active { transform: scale(0.98); }
+.avg-choice-btn strong { display: block; font-size: 0.88rem; color: var(--ink-text); margin-bottom: 2px; font-family: var(--font-serif); }
+.avg-choice-btn span { display: block; font-size: 0.75rem; color: var(--ink-muted); }
+
+/* 宣纸对话卷轴主体 + 印章名牌 */
+.avg-dialogue-panel { cursor: pointer; }
+.avg-nameplate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 16px 4px 8px;
+  background: linear-gradient(90deg, rgba(42, 36, 30, 0.92) 0%, rgba(72, 62, 50, 0.84) 78%, rgba(72, 62, 50, 0) 100%);
+  color: #faf4e8;
+  border-radius: 2px 2px 0 0;
+  min-width: 148px;
+}
+.avg-nameplate strong { font-size: 1rem; font-weight: 900; letter-spacing: 2px; font-family: var(--font-serif); }
+.avg-nameplate span { font-size: 0.75rem; opacity: 0.86; }
+
+.avg-dialogue-body {
+  position: relative;
+  min-height: 92px;
+  padding: 14px 16px 18px;
+  background: var(--xuan-pine-img) right bottom/cover, var(--xuan-bg);
+  box-shadow:
+    -2px 10px 28px rgba(34, 28, 22, 0.32),
+    inset 0 0 0 4px rgba(248, 244, 234, 0.52),
+    inset 0 0 0 5px var(--ink-stroke-soft);
+}
+.avg-dialogue-text { font-size: 0.92rem; line-height: 1.72; letter-spacing: 0.5px; color: var(--ink-text); }
+.avg-next-tri { position: absolute; right: 14px; bottom: 8px; font-size: 0.95rem; color: var(--cinnabar); animation: triBounce 0.9s ease-in-out infinite; }
+@keyframes triBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+/* ================= 卷轴弹窗：木轴卷轴展开 / 收卷动效 ================= */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 95;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 14px;
+  background: rgba(42, 36, 30, 0.66);
+  backdrop-filter: blur(6px);
+}
+.modal-overlay.open {
+  display: flex;
+  animation: backdropInkIn 220ms ease forwards;
+}
+.modal-overlay.open .book-sheet {
+  animation: scrollUnrollIn 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.modal-overlay.closing {
+  animation: backdropInkOut 220ms ease forwards;
+}
+.modal-overlay.closing .book-sheet {
+  animation: scrollRollOut 220ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.scroll-sheet {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: 86dvh;
+  overflow-y: auto;
+  padding: 24px 18px 22px;
+  border-radius: 2px;
+  text-align: center;
+}
+
+/* 卷轴上下深木轴条 + 宣纸松鹤肌理 + 宋刻双细墨框 */
+.book-sheet {
+  background: var(--xuan-pine-img) center/cover, var(--xuan-bg);
+  border-left: 1.5px solid var(--ink-stroke);
+  border-right: 1.5px solid var(--ink-stroke);
+  border-top: 7px solid #5c4632;
+  border-bottom: 7px solid #5c4632;
+  box-shadow:
+    0 22px 54px rgba(34, 26, 18, 0.46),
+    inset 0 0 0 4px rgba(248, 244, 234, 0.62),
+    inset 0 0 0 5px var(--ink-stroke-soft);
+}
+
+.sheet-seal {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(168, 50, 38, 0.55);
+  background: rgba(168, 50, 38, 0.08);
+  color: var(--cinnabar);
+  font-family: var(--font-brush);
+  font-size: 0.94rem;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.sheet-title { font-family: var(--font-brush); font-size: 1.85rem; color: var(--ink-text); letter-spacing: 2px; }
+.sheet-review { font-size: 0.84rem; color: var(--ink-muted); line-height: 1.65; margin: 6px 0 14px; }
+
+/* 账本数值格：宣纸底 + 水墨细线，彻底告别纯白卡片 */
+.ledger-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+.ledger-cell {
+  padding: 9px 8px;
+  border-radius: 2px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.88);
+  border: 1px solid var(--ink-stroke-soft);
+  box-shadow: inset 0 0 0 2px rgba(248, 244, 234, 0.45);
+}
+.ledger-cell span { display: block; font-size: 0.75rem; color: var(--ink-muted); }
+.ledger-cell strong { font-family: var(--font-brush); font-size: 1.32rem; color: var(--mint-deep); }
+
+.upgrade-section-title { text-align: left; font-family: var(--font-brush); font-size: 1.12rem; color: var(--cinnabar); margin-bottom: 8px; letter-spacing: 1px; }
+.upgrade-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+.upgrade-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 11px;
+  border-radius: 2px;
+  text-align: left;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.9);
+  border: 1px solid var(--ink-stroke-soft);
+}
+.upgrade-info strong { display: block; font-size: 0.84rem; color: var(--ink-text); }
+.upgrade-info span { display: block; font-size: 0.75rem; color: var(--ink-muted); }
+.upgrade-buy-btn { flex-shrink: 0; font-size: 0.85rem; padding: 8px 14px; min-height: 44px; min-width: 44px; }
+.sheet-main-btn { width: 100%; font-size: 1.28rem; padding: 11px 20px; }
+
+/* v33 全局卷轴外框：典故/账本/客官档案/结局四弹窗共用清透藏色青玉木轴，宣纸松鹤背景零改动 */
+.scroll-rod-frame {
+  position: relative;
+  width: min(520px, calc(100% - 16px));
+  max-height: 86dvh;
+  display: flex;
+  flex-direction: column;
+}
+.app-frame.desktop-mode .scroll-rod-frame.is-wide {
+  width: min(780px, calc(100% - 32px));
+}
+/* v34 精确裁去木轴图上下透明留白（原图有效木杆占46%高），让实心木杆稳稳压入纸边14px，消除浮空穿帮 */
+.scroll-rod-frame::before,
+.scroll-rod-frame::after {
+  content: '';
+  position: absolute;
+  left: -14px;
+  right: -14px;
+  height: 22px;
+  z-index: 4;
+  pointer-events: none;
+  background: url('../assets/ui/scroll_rod.png') center / 100% 210% no-repeat;
+  filter: drop-shadow(0 3px 6px rgba(42, 30, 20, 0.30));
+}
+.scroll-rod-frame::before { top: -8px; }
+.scroll-rod-frame::after  { bottom: -8px; transform: scaleY(-1); }
+
+.scroll-rod-frame .book-sheet {
+  width: 100%;
+  max-height: 86dvh;
+  border-top: none;
+  border-bottom: none;
+  padding-top: 34px;
+  padding-bottom: 32px;
+  /* 纸面上下卷入木轴的立体接缝内阴影 */
+  box-shadow:
+    0 22px 54px rgba(34, 26, 18, 0.46),
+    inset 0 0 0 4px rgba(248, 244, 234, 0.62),
+    inset 0 0 0 5px var(--ink-stroke-soft),
+    inset 0 12px 14px -6px rgba(92, 70, 50, 0.52),
+    inset 0 -12px 14px -6px rgba(92, 70, 50, 0.52);
+}
+
+/* v34 隐藏四弹窗原生灰色滚动条，改用底部宣纸渐隐暗示可滚动 */
+.scroll-rod-frame .scroll-sheet {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-rod-frame .scroll-sheet::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+.scroll-rod-frame .book-sheet::after {
+  content: '';
+  position: sticky;
+  bottom: -32px;
+  display: block;
+  height: 24px;
+  margin: -24px -18px -32px;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(to bottom, rgba(248, 244, 234, 0) 0%, rgba(248, 244, 234, 0.92) 100%);
+}
+.codex-sheet { text-align: left; }
+.app-frame.desktop-mode .codex-sheet { max-width: none; }
+.codex-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.codex-intro { font-size: 0.76rem; color: var(--ink-muted); line-height: 1.55; margin-bottom: 10px; }
+.demo-bar {
+  padding: 9px 10px;
+  border-radius: 2px;
+  margin-bottom: 12px;
+  background: rgba(58, 117, 104, 0.08);
+  border: 1px dashed var(--mint-deep);
+}
+.demo-bar-title { font-size: 0.75rem; font-weight: 700; color: var(--mint-deep); margin-bottom: 6px; }
+.demo-btn-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.demo-chip-btn {
+  position: relative;
+  overflow: hidden;
+  appearance: none;
+  cursor: pointer;
+  padding: 8px 12px; min-height: 44px;
+  border-radius: 2px;
+  border: 1px solid var(--mint-deep);
+  background: var(--xuan-bg);
+  color: var(--mint-deep);
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: transform 90ms ease;
+}
+.demo-chip-btn:active { transform: scale(0.94); }
+
+.codex-list { display: flex; flex-direction: column; gap: 10px; }
+.app-frame.desktop-mode .codex-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.codex-card {
+  padding: 11px 12px;
+  border-radius: 2px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.92);
+  border: 1px solid var(--ink-stroke-soft);
+  box-shadow: inset 0 0 0 2px rgba(248, 244, 234, 0.45);
+}
+.codex-card.locked { background: rgba(232, 226, 214, 0.92); border-color: rgba(126, 112, 94, 0.5); }
+.codex-card.locked .codex-card-title, .codex-card.locked .codex-note { color: #594f44; }
+.codex-card-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 5px; }
+.codex-card-title { font-size: 0.88rem; font-weight: 700; color: var(--ink-text); }
+.codex-source { font-size: 0.75rem; padding: 1px 7px; border-radius: 2px; background: rgba(58, 117, 104, 0.12); color: var(--mint-deep); font-weight: 700; }
+.codex-quote { font-size: 0.78rem; color: #3c5450; padding-left: 8px; border-left: 2px solid var(--cinnabar); margin-bottom: 6px; line-height: 1.5; }
+.codex-note { font-size: 0.75rem; color: var(--ink-muted); line-height: 1.55; }
+
+/* ================= AVG 两段式抉择心流：暗化聚光 + 飞花落叶 + 图标化选项卡片 ================= */
+.avg-backdrop {
+  transition: background 320ms ease, filter 320ms ease;
+}
+.avg-overlay.choosing .avg-backdrop {
+  background: radial-gradient(circle at 50% 34%, rgba(58, 48, 38, 0.52), rgba(24, 19, 15, 0.88) 84%);
+}
+.avg-overlay.choosing .avg-portrait {
+  filter: drop-shadow(-3px 10px 26px rgba(18, 14, 10, 0.5)) brightness(0.92);
+  transition: filter 320ms ease;
+}
+
+/* 飞花 / 落叶粒子层 */
+.avg-petal-layer {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden;
+}
+.avg-petal {
+  position: absolute; top: -18px;
+  width: 11px; height: 7px;
+  border-radius: 75% 15% 75% 15%;
+  background: linear-gradient(135deg, #f3d299 0%, #d9836a 100%);
+  opacity: 0;
+  animation: petalDrift var(--dur, 4.2s) ease-in-out var(--delay, 0s) infinite;
+}
+@keyframes petalDrift {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+  15% { opacity: 0.82; }
+  80% { opacity: 0.72; }
+  100% { opacity: 0; transform: translate3d(var(--dx, -65px), 102vh, 0) rotate(260deg); }
+}
+
+/* 选项未展开前隐藏，点击后以卷轴展开形式优雅浮现 */
+.avg-choices { display: none; }
+.avg-choices.revealed { display: flex; }
+
+.avg-choice-btn {
+  display: flex; flex-direction: column; gap: 6px;
+  animation: scrollUnrollIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.avg-choice-btn:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+  border-left-color: var(--ink-stroke);
+  filter: saturate(0.5);
+}
+.avg-choice-btn:disabled:hover {
+  border-left-width: 4px;
+  filter: saturate(0.5);
+}
+
+.ending-emblem-img {
+  display: block;
+  width: 112px;
+  height: 112px;
+  margin: 4px auto 8px;
+  object-fit: contain;
+  filter: drop-shadow(-2px 6px 12px rgba(48, 38, 28, 0.22));
+}
+
+/* 诗眼解读卡片与选项修饰类 */
+.avg-poem-eye-quote {
+  margin: 0 auto 8px;
+  width: 100%;
+  padding: 9px 14px;
+  text-align: center;
+  border-left: 3px solid var(--mint-deep);
+}
+.poem-eye-src {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--mint-deep);
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+.poem-eye-line {
+  font-family: var(--font-brush);
+  font-size: 1.28rem;
+  color: var(--ink-text);
+  letter-spacing: 2px;
+  line-height: 1.35;
+}
+.avg-choice-btn.poem-eye {
+  border-left-color: var(--mint-deep);
+}
+.avg-choice-btn.poem-eye /* 客官档案与打烊复盘叙述 */
+.profile-sheet { text-align: left; }
+.profile-hero {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 12px; margin-bottom: 12px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.92);
+  border: 1px solid var(--ink-stroke-soft); border-radius: 2px;
+}
+.profile-avatar {
+  width: 68px; height: 68px; object-fit: contain;
+  background: rgba(236, 230, 218, 0.65); border-radius: 4px;
+  border: 1px solid var(--ink-stroke-soft);
+}
+.profile-meta { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.profile-count { font-size: 0.82rem; font-weight: 700; color: var(--ink-muted); }
+.profile-rows { display: flex; flex-direction: column; gap: 8px; }
+.profile-row {
+  padding: 9px 12px; border-radius: 2px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.92);
+  border: 1px solid var(--ink-stroke-soft);
+}
+.profile-row.locked { background: rgba(232, 226, 214, 0.9); }
+.profile-row strong { display: block; font-size: 0.82rem; color: var(--mint-deep); margin-bottom: 2px; }
+.profile-row p { font-size: 0.82rem; color: var(--ink-text); line-height: 1.5; }
+.profile-row.locked p { color: #594f44; }
+
+.ledger-narrative {
+  text-align: left;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 2px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.92);
+  border: 1px solid var(--ink-stroke-soft);
+  border-left: 3px solid var(--mint-deep);
+  font-size: 0.82rem;
+  color: var(--ink-text);
+  line-height: 1.6;
+}
+.ledger-narrative-head { font-weight: 700; color: var(--ink-text); margin-bottom: 4px; }
+.ledger-narrative ul { list-style: none; padding-left: 0; margin: 0 0 6px; }
+.ledger-narrative li { padding-left: 12px; position: relative; margin-bottom: 2px; color: var(--ink-muted); }
+.ledger-narrative li::before { content: '·'; position: absolute; left: 2px; color: var(--cinnabar); font-weight: 900; }
+.ledger-rumor-line {
+  padding-top: 6px;
+  border-top: 1px dashed var(--ink-stroke-soft);
+  color: var(--tone-neutral);
+  font-weight: 700;
+}
+.ledger-rumor-line.pos { color: var(--tone-pos); }
+.ledger-rumor-line.warn { color: var(--tone-warn); }
+
+.ending-paths-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border-radius: 2px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.92);
+  border: 1px solid var(--ink-stroke-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-text);
+}
+.path-meter { display: inline-flex; align-items: center; gap: 4px; }
+.path-dots { color: var(--cinnabar); letter-spacing: 1px; }
+.path-meter.wen .path-dots { color: var(--mint-deep); }
+.path-meter.trade .path-dots { color: var(--song-gold); }
+
+.ending-notes {
+  text-align: left;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border-radius: 2px;
+  background: var(--xuan-paper-img) center/cover, rgba(248, 244, 234, 0.92);
+  border: 1px solid var(--ink-stroke-soft);
+  border-left: 3px solid var(--cinnabar);
+  font-size: 0.8rem;
+  color: var(--ink-text);
+  line-height: 1.55;
+}
+.ending-notes-title { font-weight: 800; color: var(--cinnabar); margin-bottom: 4px; }
+.ending-notes ul { list-style: none; padding-left: 0; margin: 0; }
+.ending-notes li { padding-left: 12px; position: relative; color: var(--ink-muted); margin-bottom: 2px; }
+.ending-notes li::before { content: '·'; position: absolute; left: 2px; color: var(--cinnabar); font-weight: 900; }
+
+/* ================= v25 AVG 竖屏分层 + 两态立绘 + 三层平行选项 + 四态闭环 ================= */
+.avg-stage {
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+/* 两态立绘：阅读态 42% 锁头肩，抉择态 26% 渐进让渡，底部 40px 柔化渐隐 */
+.avg-portrait-wrap {
+  flex: 0 0 auto;
+  height: 42%;
+  max-height: 42%;
+  min-height: 120px;
+  margin-bottom: 0;
+  overflow: hidden;
+  align-items: flex-start;
+  pointer-events: auto;
+  transition: height 220ms ease, max-height 220ms ease;
+}
+.avg-portrait-wrap::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 44px;
+  background: linear-gradient(to bottom, transparent, rgba(248, 244, 234, 0.9));
+  pointer-events: none;
+}
+.avg-portrait {
+  height: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: top center;
+}
+.avg-overlay.choosing .avg-portrait-wrap {
+  height: 26%;
+  max-height: 26%;
+  cursor: pointer;
+}
+
+.avg-bottom-dock {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  justify-content: flex-start;
+  gap: 14px;
+  padding-bottom: 6px;
+}
+
+/* 统一绢帛宣纸材质：微圆角 5px + 极浅内阴影 */
+.avg-poem-card,
+.avg-poem-eye-quote {
+  margin: 0;
+  border-radius: 5px;
+  box-shadow: 0 4px 14px rgba(42, 34, 26, 0.14), inset 0 0 0 1px rgba(255, 252, 246, 0.72);
+}
+
+/* 台词区（峰终定律：全界面最大字号 16px，左侧朱砂细线替代旧红方章） */
+.avg-dialogue-panel {
+  border-radius: 5px;
+  border-left: 3px solid var(--cinnabar);
+  background: var(--xuan-paper-img) center/cover, var(--xuan-bg);
+  border-top: 1px solid var(--ink-stroke-soft);
+  border-right: 1px solid var(--ink-stroke-soft);
+  border-bottom: 1px solid var(--ink-stroke-soft);
+  box-shadow: 0 6px 18px rgba(34, 28, 22, 0.18), inset 0 0 0 1px rgba(255, 252, 246, 0.7);
+  overflow: hidden;
+}
+.avg-nameplate-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 12px 2px 14px;
+}
+.avg-nameplate {
+  background: none;
+  color: var(--ink-text);
+  padding: 0;
+  min-width: 0;
+}
+.avg-nameplate strong {
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: var(--ink-text);
+}
+.avg-nameplate span {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  opacity: 1;
+}
+
+/* 名牌右侧轻量收起键（零额外垂直占位，热区 ≥44×44px） */
+.avg-collapse-btn {
+  position: relative;
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+.avg-collapse-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  min-width: 44px; min-height: 44px; width: 100%; height: 100%;
+  transform: translate(-50%, -50%);
+}
+.avg-collapse-btn:hover { color: var(--cinnabar); }
+
+.avg-dialogue-body {
+  min-height: 76px;
+  padding: 6px 14px 16px;
+  background: none;
+  box-shadow: none;
+}
+.avg-dialogue-text {
+  font-size: 1rem;
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+  color: var(--ink-text);
+}
+/* 选项区（紧凑三层平行模板 + 宋画矿物语义色 + 四态响应 ≤100ms） */
+.avg-choices {
+  gap: 10px;
+  margin-bottom: 0;
+}
+.avg-choice-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 44px;
+  padding: 11px 14px;
+  border-radius: 5px;
+  border: 1px solid var(--ink-stroke);
+  border-left: 1px solid var(--ink-stroke);
+  background: var(--xuan-paper-img) center/cover, var(--xuan-bg);
+  box-shadow: 0 4px 12px rgba(38, 30, 24, 0.14), inset 0 0 0 1px rgba(255, 252, 246, 0.72);
+  font-variant-numeric: tabular-nums;
+  transition: transform 90ms ease, border-color 90ms ease, border-left-width 90ms ease, filter 90ms ease, background-color 90ms ease;
+}
+.avg-choice-btn:hover:not(:disabled),
+.avg-choice-btn:focus-visible:not(:disabled) {
+  border-left: 3px solid var(--cinnabar);
+  transform: translateX(2px);
+  filter: brightness(1.02);
+  outline: none;
+}
+.avg-choice-btn:active:not(:disabled) {
+  filter: brightness(0.92);
+  transform: scale(0.98);
+}
+.avg-choice-btn:disabled {
+  filter: saturate(0.4);
+  opacity: 0.62;
+  cursor: not-allowed;
+  transform: none;
+}
+.avg-choice-btn:disabled[data-disabled-reason]::after {
+  content: attr(data-disabled-reason);
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cinnabar);
+}
+
+.choice-row-1 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.choice-row-1 strong {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--ink-text);
+  margin: 0;
+  line-height: 1.35;
+}
+.choice-tag {
+  flex-shrink: 0;
+  font-style: normal;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #655A4E;
+}
+
+.choice-row-2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+  border-top: 0.5px solid rgba(126, 98, 70, 0.25);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.choice-cost {
+  color: #A83226;
+}
+.choice-gain {
+  color: #2B6E5E;
+  text-align: right;
+  margin-left: auto;
+}
+.choice-gain.is-neutral {
+  color: #655A4E;
+  font-weight: 600;
+}
+
+.choice-row-3 {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #8A5610;
+  line-height: 1.3;
+}
+.choice-row-3.is-none {
+  color: #655A4E;
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avg-portrait-wrap,
+  .avg-choice-btn { transition: none; }
+  .avg-choice-btn:hover:not(:disabled) { transform: none; }
+}
+
+/* ================= v35 一景一器 · 废除白框与全站手撕宣纸升级 ================= */
+
+/* 1. 彻底废除立绘底部白色雾带，改为原生 alpha 柔化遮罩，人物自然融入暮色 */
+.avg-portrait-wrap::after {
+  display: none;
+}
+.avg-portrait {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 76%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 76%, transparent 100%);
+}
+
+/* 柳岸奇遇专属：青釉乌篷船与金梅装饰浮于背景右下角 */
+.avg-boat-deco {
+  position: absolute;
+  right: -12px;
+  bottom: 14px;
+  width: min(230px, 52vw);
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px);
+  filter: drop-shadow(0 6px 14px rgba(18, 28, 32, 0.35));
+  transition: opacity 320ms ease, transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.avg-overlay.is-outdoor-encounter.open .avg-boat-deco {
+  opacity: 0.56;
+  transform: translateY(0);
+}
+
+/* 2. AVG 对话主框：手撕毛边宣纸 + 水墨描金名牌（告别圆角白盒） */
+.avg-dialogue-panel {
+  position: relative;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 8px 20px rgba(26, 20, 14, 0.32));
+  overflow: visible;
+  padding: 16px 20px 14px;
+  margin-top: 10px;
+}
+.avg-nameplate-row {
+  position: relative;
+  margin: -26px 0 4px -6px;
+  padding: 0;
+}
+.avg-nameplate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 26px 6px 18px;
+  min-height: 32px;
+  color: #faf4e8;
+  filter: drop-shadow(0 3px 6px rgba(22, 16, 10, 0.36));
+}
+.avg-nameplate strong {
+  font-size: 0.94rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff9ee;
+  text-shadow: 0 1px 3px rgba(20, 14, 8, 0.72);
+}
+.avg-nameplate span {
+  font-size: 0.75rem;
+  color: #f3dfba;
+  text-shadow: 0 1px 2px rgba(20, 14, 8, 0.65);
+}
+.avg-collapse-btn {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(34, 28, 22, 0.62);
+  color: #f7efe0;
+  backdrop-filter: blur(4px);
+}
+.avg-collapse-btn:hover {
+  color: #f5d89a;
+  background: rgba(34, 28, 22, 0.8);
+}
+.avg-dialogue-body {
+  min-height: 62px;
+  padding: 6px 4px 10px;
+}
+
+/* 3. AVG 抉择纸笺：同样切换为手撕毛边宣纸 + 悬停金墨流光 */
+.avg-choices {
+  gap: 8px;
+  padding: 2px 2px 4px;
+}
+.avg-choice-btn {
+  border: none;
+  border-left: none;
+  border-radius: 0;
+  padding: 13px 20px 13px 22px;
+  box-shadow: none;
+  filter: drop-shadow(0 5px 14px rgba(26, 20, 14, 0.28));
+  transition: transform 95ms ease, filter 120ms ease;
+}
+.avg-choice-btn::before {
+  content: '';
+  position: absolute;
+  inset: 4px 8px;
+  background: linear-gradient(90deg, rgba(214, 168, 78, 0.24) 0%, rgba(214, 168, 78, 0.04) 72%, transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+.avg-choice-btn:hover:not(:disabled),
+.avg-choice-btn:focus-visible:not(:disabled) {
+  border-left: none;
+  transform: translateX(3px);
+  filter: drop-shadow(0 7px 18px rgba(212, 168, 86, 0.34)) brightness(1.02);
+  outline: none;
+}
+.avg-choice-btn:hover:not(:disabled)::before,
+.avg-choice-btn:focus-visible:not(:disabled)::before {
+  opacity: 1;
+}
+.avg-choice-btn:active:not(:disabled) {
+  transform: scale(0.98);
+  filter: drop-shadow(0 3px 8px rgba(26, 20, 14, 0.26)) brightness(0.95);
+}
+.avg-choice-btn:disabled {
+  filter: saturate(0.45) drop-shadow(0 4px 10px rgba(26, 20, 14, 0.2));
+  opacity: 0.68;
+}
+.avg-choice-btn:disabled[data-disabled-reason]::after {
+  right: 18px;
+  top: 12px;
+}
+
+/* ================= 4. 共用特化出街浮层基座（檐下三灯 / 青荷折扇） ================= */
+.diegetic-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 92;
+  display: none;
+  flex-direction: column;
+}
+.diegetic-overlay.open {
+  display: flex;
+}
+.diegetic-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 28%, rgba(34, 42, 48, 0.56), rgba(18, 16, 15, 0.86) 85%);
+  backdrop-filter: blur(7px);
+  animation: backdropInkIn 220ms ease forwards;
+}
+.diegetic-overlay.closing .diegetic-backdrop {
+  animation: backdropInkOut 200ms ease forwards;
+}
+.diegetic-overlay.closing .lantern-stage-inner,
+.diegetic-overlay.closing .intel-fan-inner {
+  animation: inkWashOut 200ms ease forwards;
+}
+
+.diegetic-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.diegetic-brush-title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 34px;
+  font-family: var(--font-brush);
+  font-size: 1.38rem;
+  letter-spacing: 3px;
+  color: #fff8eb;
+  text-shadow: 0 2px 6px rgba(18, 12, 6, 0.72);
+  filter: drop-shadow(0 4px 12px rgba(16, 12, 8, 0.4));
+}
+.diegetic-brush-title.is-compact {
+  padding: 6px 24px 6px 18px;
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+}
+.diegetic-header-note {
+  max-width: 420px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #f4ebd8;
+  text-shadow: 0 1px 4px rgba(14, 10, 8, 0.75);
+}
+.diegetic-header-note.is-warning {
+  color: #ffe3b8;
+  background: linear-gradient(90deg, transparent, rgba(168, 50, 38, 0.42) 18%, rgba(168, 50, 38, 0.42) 82%, transparent);
+  font-weight: 700;
+}
+.diegetic-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}
+.diegetic-ghost-close {
+  appearance: none;
+  cursor: pointer;
+  min-height: 44px;
+  padding: 8px 24px;
+  border: none;
+  border-bottom: 1px solid rgba(242, 224, 186, 0.42);
+  background: transparent;
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  letter-spacing: 2px;
+  color: #f3e6cc;
+  text-shadow: 0 1px 4px rgba(14, 10, 8, 0.8);
+  transition: color 120ms ease, border-color 120ms ease, transform 90ms ease;
+}
+.diegetic-ghost-close:hover,
+.diegetic-ghost-close:focus-visible {
+  color: #ffe2a0;
+  border-bottom-color: #f0c979;
+  outline: none;
+}
+.diegetic-ghost-close:active {
+  transform: scale(0.96);
+}
+
+/* ================= 5. 檐下三灯 · 触灯即选 ================= */
+.lantern-stage-inner {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  width: min(560px, 100%);
+  margin: 0 auto;
+  padding: max(18px, env(safe-area-inset-top)) 12px max(22px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  animation: inkWashIn 260ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.lantern-trio {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
+  gap: 8px;
+  padding-top: 6px;
+}
+
+.lantern-hang-btn {
+  appearance: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0 2px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+  animation: lanternSway var(--sway-dur, 4.6s) ease-in-out var(--sway-delay, 0s) infinite;
+  transition: transform 140ms ease, filter 160ms ease;
+}
+.lantern-hang-btn.is-celadon { --sway-dur: 4.8s; --sway-delay: -0.4s; }
+.lantern-hang-btn.is-coral   { --sway-dur: 4.3s; --sway-delay: -1.7s; }
+.lantern-hang-btn.is-amber   { --sway-dur: 5.1s; --sway-delay: -2.6s; }
+
+@keyframes lanternSway {
+  0%, 100% { transform: rotate(-1.3deg); }
+  50% { transform: rotate(1.3deg); }
+}
+
+.lantern-cord {
+  width: 1.5px;
+  background: linear-gradient(to bottom, rgba(236, 212, 162, 0.25), rgba(236, 212, 162, 0.85));
+}
+.lantern-hang-btn.is-celadon .lantern-cord { height: 26px; }
+.lantern-hang-btn.is-coral   .lantern-cord { height: 10px; }
+.lantern-hang-btn.is-amber   .lantern-cord { height: 34px; }
+
+.lantern-glow-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transition: transform 150ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lantern-glow-wrap::before {
+  content: '';
+  position: absolute;
+  width: 78%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  opacity: 0.46;
+  filter: blur(18px);
+  pointer-events: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+.lantern-hang-btn.is-celadon .lantern-glow-wrap::before {
+  background: radial-gradient(circle, rgba(132, 224, 198, 0.72), transparent 72%);
+}
+.lantern-hang-btn.is-coral .lantern-glow-wrap::before {
+  background: radial-gradient(circle, rgba(244, 146, 118, 0.78), transparent 72%);
+}
+.lantern-hang-btn.is-amber .lantern-glow-wrap::before {
+  background: radial-gradient(circle, rgba(248, 202, 114, 0.78), transparent 72%);
+}
+
+.lantern-img {
+  position: relative;
+  z-index: 1;
+  width: min(104px, 28vw);
+  max-height: 36dvh;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(18, 12, 8, 0.42));
+  transition: filter 150ms ease;
+}
+
+.lantern-tag-slip {
+  position: relative;
+  margin-top: 4px;
+  width: 100%;
+  max-width: 152px;
+  padding: 10px 8px 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  filter: drop-shadow(0 4px 10px rgba(18, 12, 8, 0.35));
+  transition: filter 140ms ease, transform 140ms ease;
+}
+.lantern-tag-name {
+  font-family: var(--font-brush);
+  font-size: 1.06rem;
+  letter-spacing: 1.5px;
+  color: var(--ink-text);
+  line-height: 1.2;
+}
+.lantern-tag-guest {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+  line-height: 1.25;
+}
+.lantern-tag-effect {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #5c5144;
+  margin-top: 2px;
+}
+.lantern-tag-effect.is-gold { color: #8c5610; }
+.lantern-tag-effect.is-pos  { color: #2b6e5e; }
+
+.lantern-hang-btn:hover .lantern-glow-wrap,
+.lantern-hang-btn:focus-visible .lantern-glow-wrap {
+  transform: translateY(-4px) scale(1.06);
+}
+.lantern-hang-btn:hover .lantern-glow-wrap::before,
+.lantern-hang-btn:focus-visible .lantern-glow-wrap::before {
+  opacity: 0.88;
+  transform: scale(1.18);
+}
+.lantern-hang-btn:hover .lantern-img,
+.lantern-hang-btn:focus-visible .lantern-img {
+  filter: drop-shadow(0 10px 24px rgba(245, 206, 124, 0.52)) brightness(1.06);
+}
+.lantern-hang-btn:hover .lantern-tag-slip,
+.lantern-hang-btn:focus-visible .lantern-tag-slip {
+  transform: translateY(-2px);
+  filter: drop-shadow(0 6px 16px rgba(232, 186, 98, 0.44));
+}
+.lantern-hang-btn:focus-visible { outline: none; }
+.lantern-hang-btn:active .lantern-glow-wrap { transform: scale(0.96); }
+
+/* ================= 6. 青荷折扇 · 双笺商契 ================= */
+.intel-fan-inner {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  width: min(560px, 100%);
+  margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) 14px max(20px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  animation: inkWashIn 260ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.intel-hero-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  min-height: 150px;
+}
+.intel-peddler-wrap {
+  flex: 0 0 auto;
+  width: min(142px, 34vw);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+.intel-peddler-img {
+  width: 100%;
+  height: auto;
+  max-height: 210px;
+  object-fit: contain;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 80%, transparent 100%);
+  filter: drop-shadow(0 8px 18px rgba(18, 14, 10, 0.42));
+}
+.intel-speech-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding-bottom: 10px;
+}
+.intel-speech-line {
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: #f8f0df;
+  text-shadow: 0 1px 4px rgba(16, 12, 8, 0.82);
+}
+.intel-silver-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(248, 240, 222, 0.16);
+  border: 1px solid rgba(242, 212, 152, 0.48);
+  color: #ffe4a8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.intel-fan-vessel {
+  position: relative;
+  flex: 1;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 4px 12px;
+}
+.intel-fan-deco {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -48%);
+  width: min(460px, 98%);
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.88;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 26px rgba(14, 24, 24, 0.44));
+}
+
+.intel-contracts-grid {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.intel-contract-slip {
+  position: relative;
+  appearance: none;
+  cursor: pointer;
+  border: none;
+  padding: 18px 14px 16px;
+  min-height: 142px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+  text-align: left;
+  filter: drop-shadow(0 8px 18px rgba(20, 16, 12, 0.36));
+  transition: transform 110ms ease, filter 130ms ease;
+}
+.intel-contract-slip:hover:not(:disabled),
+.intel-contract-slip:focus-visible:not(:disabled) {
+  transform: translateY(-4px);
+  filter: drop-shadow(0 12px 22px rgba(232, 186, 98, 0.46)) brightness(1.03);
+  outline: none;
+}
+.intel-contract-slip:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.intel-contract-slip.is-owned {
+  cursor: default;
+  filter: drop-shadow(0 6px 14px rgba(20, 34, 30, 0.28));
+}
+.intel-contract-slip.is-short {
+  cursor: not-allowed;
+  opacity: 0.72;
+  filter: saturate(0.55) drop-shadow(0 5px 12px rgba(20, 16, 12, 0.25));
+}
+
+.contract-seal {
+  align-self: flex-end;
+  padding: 2px 9px;
+  border-radius: 2px;
+  border: 1px solid rgba(168, 50, 38, 0.55);
+  background: rgba(168, 50, 38, 0.09);
+  color: var(--cinnabar);
+  font-family: var(--font-brush);
+  font-size: 0.86rem;
+  letter-spacing: 1.5px;
+  transform: rotate(-4deg);
+}
+.intel-contract-slip.is-owned .contract-seal {
+  border-color: rgba(43, 110, 94, 0.65);
+  background: rgba(43, 110, 94, 0.14);
+  color: #215c4e;
+}
+.intel-contract-slip.is-short .contract-seal {
+  border-color: rgba(140, 56, 42, 0.5);
+  background: rgba(140, 56, 42, 0.08);
+  color: #8c382a;
+}
+.contract-title {
+  font-family: var(--font-serif);
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--ink-text);
+  line-height: 1.3;
+}
+.contract-desc {
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+.contract-price {
+  margin-top: auto;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--cinnabar);
+  font-variant-numeric: tabular-nums;
+}
+.intel-contract-slip.is-owned .contract-price {
+  color: #2b6e5e;
+}
+
+/* 桌面宽屏适配 */
+.app-frame.desktop-mode .lantern-stage-inner,
+.app-frame.desktop-mode .intel-fan-inner {
+  width: min(760px, 100%);
+}
+.app-frame.desktop-mode .lantern-img {
+  width: 132px;
+}
+.app-frame.desktop-mode .intel-peddler-wrap {
+  width: 176px;
+}
+.app-frame.desktop-mode .intel-fan-deco {
+  width: 580px;
+}
+.app-frame.desktop-mode .intel-contracts-grid {
+  gap: 18px;
+  max-width: 620px;
+}
+.app-frame.desktop-mode .intel-contract-slip {
+  padding: 22px 20px 18px;
+  min-height: 158px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lantern-hang-btn { animation: none; }
+  .lantern-glow-wrap,
+  .lantern-tag-slip,
+  .intel-contract-slip,
+  .avg-boat-deco { transition: none; }
+}
+
+
+/* ================= v37 清透琉璃 · 笔触分层重构（去茶渍做旧 + 分离叙述层与行动层） ================= */
+
+/* 1. 清透烟青水雾遮罩：取代沉闷暗黑棕底，保留御街琉璃空气感 */
+.avg-backdrop {
+  background: radial-gradient(circle at 50% 24%, rgba(232, 246, 242, 0.24), rgba(24, 48, 54, 0.66) 86%);
+  backdrop-filter: blur(7px);
+}
+.avg-overlay.choosing .avg-backdrop {
+  background: radial-gradient(circle at 50% 24%, rgba(220, 240, 236, 0.16), rgba(18, 40, 46, 0.74) 86%);
+}
+.diegetic-backdrop {
+  background: radial-gradient(circle at 50% 24%, rgba(226, 244, 240, 0.22), rgba(20, 44, 50, 0.72) 86%);
+  backdrop-filter: blur(7px);
+}
+
+/* 柳岸奇遇：青釉乌篷船与金梅在清透水雾中晶莹浮现 */
+.avg-overlay.is-outdoor-encounter.open .avg-boat-deco {
+  opacity: 0.76;
+  filter: drop-shadow(0 8px 18px rgba(18, 42, 46, 0.34));
+}
+
+/* 2. 叙述层（角色台词）：玉白青边水雾大笔触 + 石青鎏金飞白名牌（零发黄、零做旧） */
+.avg-dialogue-panel {
+  padding: 20px 26px 18px;
+  filter: drop-shadow(0 8px 22px rgba(18, 44, 48, 0.26));
+}
+.avg-nameplate-row {
+  margin: -30px 0 6px -8px;
+}
+.avg-nameplate {
+  padding: 7px 32px 7px 20px;
+  min-height: 36px;
+  filter: drop-shadow(0 4px 10px rgba(16, 44, 46, 0.34));
+}
+.avg-nameplate strong {
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(12, 34, 38, 0.72);
+}
+.avg-nameplate span {
+  color: #f8e7bc;
+  text-shadow: 0 1px 3px rgba(12, 34, 38, 0.65);
+}
+.avg-collapse-btn {
+  padding: 5px 12px;
+  background: rgba(24, 58, 60, 0.68);
+  border: 1px solid rgba(190, 236, 224, 0.42);
+  color: #f2fbf8;
+  backdrop-filter: blur(6px);
+}
+.avg-collapse-btn:hover {
+  background: rgba(32, 76, 74, 0.84);
+  color: #ffe8ad;
+}
+.avg-dialogue-text {
+  color: #1c2e2c;
+  font-size: 0.98rem;
+  line-height: 1.72;
+}
+
+/* 3. 行动层（抉择选项）：截然不同的视觉语言 —— 修长石青鎏金飞白横刷 + 紧凑排版 */
+.avg-choices {
+  gap: 10px;
+  padding: 4px 2px 6px;
+}
+.avg-choice-btn {
+  padding: 13px 26px 13px 28px;
+  min-height: 58px;
+  filter: drop-shadow(0 6px 16px rgba(16, 44, 46, 0.28));
+  transition: transform 110ms cubic-bezier(0.22, 1, 0.36, 1), filter 130ms ease;
+}
+.avg-choice-btn::before {
+  inset: 4px 10px;
+  background: linear-gradient(90deg, rgba(255, 222, 130, 0.34) 0%, rgba(168, 240, 222, 0.14) 68%, transparent 100%);
+}
+.avg-choice-btn:hover:not(:disabled),
+.avg-choice-btn:focus-visible:not(:disabled) {
+  transform: translateX(5px);
+  filter: drop-shadow(0 8px 20px rgba(244, 206, 114, 0.44)) brightness(1.04);
+}
+.avg-choice-btn .choice-row-1 strong {
+  color: #162a28;
+  font-size: 0.94rem;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+.avg-choice-btn .choice-tag {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(255, 252, 244, 0.68);
+  color: #24584e;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.avg-choice-btn .choice-row-2 {
+  border-top: none;
+  padding-top: 2px;
+  font-size: 0.82rem;
+}
+.avg-choice-btn .choice-cost {
+  color: #9c2f24;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.avg-choice-btn .choice-gain {
+  color: #165446;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+.avg-choice-btn .choice-row-3 {
+  color: #7c4a08;
+  font-size: 0.76rem;
+}
+/* 隐藏多余的「无后续回报」占位行，让抉择条更轻盈透气 */
+.avg-choice-btn .choice-row-3.is-none {
+  display: none;
+}
+
+/* 4. 檐下三灯 & 青荷折扇：同步切换石青鎏金标题笔触与清透玉白载体 */
+.diegetic-brush-title {
+  padding: 10px 38px;
+  color: #ffffff;
+  text-shadow: 0 1px 5px rgba(12, 34, 38, 0.72);
+  filter: drop-shadow(0 5px 14px rgba(14, 40, 44, 0.36));
+}
+.diegetic-brush-title.is-compact {
+  padding: 7px 28px 7px 20px;
+}
+
+/* 檐下三灯挂签：告别发黄旧纸，改用清透玉白微霜琉璃签（带灯色顶部光边） */
+.lantern-tag-slip {
+  background: linear-gradient(180deg, rgba(248, 253, 251, 0.88) 0%, rgba(236, 248, 245, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-top: 2.5px solid rgba(236, 198, 118, 0.85);
+  border-radius: 6px;
+  backdrop-filter: blur(8px);
+  padding: 9px 8px 10px;
+  box-shadow: 0 6px 18px rgba(16, 40, 44, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  filter: none;
+}
+.lantern-hang-btn.is-celadon .lantern-tag-slip { border-top-color: #66bfa6; }
+.lantern-hang-btn.is-coral   .lantern-tag-slip { border-top-color: #e4826a; }
+.lantern-hang-btn.is-amber   .lantern-tag-slip { border-top-color: #e5b254; }
+.lantern-tag-name { color: #182c2a; }
+.lantern-tag-guest { color: #46605c; }
+
+/* 青荷折扇双契：换为清透玉白青边水雾大笔触，与石绿描金折扇浑然一体 */
+.intel-contract-slip {
+  padding: 20px 18px 18px;
+  filter: drop-shadow(0 8px 20px rgba(16, 44, 48, 0.28));
+}
+.intel-contract-slip:hover:not(:disabled),
+.intel-contract-slip:focus-visible:not(:disabled) {
+  filter: drop-shadow(0 12px 24px rgba(132, 224, 198, 0.44)) brightness(1.03);
+}
+.intel-contract-slip .contract-title { color: #162b29; }
+.intel-contract-slip .contract-desc  { color: #3e5854; }
+.intel-silver-pill {
+  background: rgba(240, 252, 248, 0.22);
+  border-color: rgba(186, 236, 222, 0.56);
+  color: #fff3cf;
+}
+
+
+/* ================= v41 平笔琉璃藏色（图4/5/6同源） + 海棠灯谜签（图3） + 3D 缓落光尘 ================= */
+
+/* 1. 叙述层（台词）与商情双契：无颗粒平笔琉璃玉白藏色底图 */
+.avg-dialogue-panel {
+  background: url('../assets/ui/silk_dialogue_stroke.png') center / 100% 100% no-repeat;
+  padding: 22px 26px 18px;
+  filter: drop-shadow(0 8px 22px rgba(20, 48, 56, 0.22));
+}
+.intel-contract-slip {
+  background: url('../assets/ui/silk_dialogue_stroke.png') center / 100% 100% no-repeat;
+  padding: 22px 20px 18px;
+  filter: drop-shadow(0 8px 20px rgba(20, 48, 56, 0.24));
+}
+
+/* 2. 名牌与三大热点标题：平笔湖蓝石青鎏金藏色短刷 */
+.avg-nameplate {
+  background: url('../assets/ui/silk_nameplate_stroke.png') left center / 100% 100% no-repeat;
+  padding: 7px 30px 7px 20px;
+  filter: drop-shadow(0 4px 10px rgba(18, 48, 56, 0.28));
+}
+.diegetic-brush-title {
+  background: url('../assets/ui/silk_nameplate_stroke.png') center / 100% 100% no-repeat;
+  padding: 10px 40px;
+  filter: drop-shadow(0 5px 14px rgba(18, 48, 56, 0.3));
+}
+.diegetic-brush-title.is-compact {
+  padding: 7px 28px 7px 20px;
+}
+
+/* 3. 行动层（抉择条）：平笔冰青蜜金藏色横刷，右侧稳稳承托数值绝不悬空 */
+.avg-choice-btn {
+  padding: 13px 28px 13px 26px;
+  min-height: 60px;
+  background: url('../assets/ui/silk_choice_stroke.png') center / 100% 100% no-repeat;
+  filter: drop-shadow(0 6px 16px rgba(18, 46, 54, 0.24));
+}
+.avg-choice-btn .choice-row-1 strong {
+  color: #162e30;
+}
+.avg-choice-btn .choice-gain {
+  color: #124e44;
+  font-weight: 800;
+  padding-right: 4px;
+}
+
+/* 4. 檐下三灯：图三同款「海棠内凹四角 · 顶带穿孔垂丝」宋韵灯谜签 */
+.lantern-tag-thread {
+  display: block;
+  width: 1.5px;
+  height: 12px;
+  margin-top: -4px;
+  margin-bottom: -10px;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(to bottom, rgba(242, 212, 146, 0.92), rgba(212, 174, 102, 0.72));
+}
+.lantern-tag-slip {
+  position: relative;
+  background: transparent;
+  border: none;
+  border-top: none;
+  border-radius: 0;
+  backdrop-filter: none;
+  box-shadow: none;
+  padding: 30px 10px 18px;
+  margin-top: 0;
+  min-height: 118px;
+  justify-content: center;
+  gap: 4px;
+  filter: drop-shadow(0 8px 16px rgba(18, 40, 46, 0.26));
+}
+.lantern-begonia-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.lantern-tag-name,
+.lantern-tag-guest,
+.lantern-tag-effect {
+  position: relative;
+  z-index: 1;
+}
+.lantern-tag-name {
+  font-size: 1.04rem;
+  color: #182e2e;
+}
+.lantern-tag-guest {
+  font-size: 0.74rem;
+  color: #466260;
+}
+.lantern-hang-btn:hover .lantern-tag-slip,
+.lantern-hang-btn:focus-visible .lantern-tag-slip {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 10px 20px rgba(242, 206, 126, 0.44));
+}
+
+/* 5. 重构景深粒子：3D 缓落不规则透明花瓣 + 柔和琉璃光尘 */
+.avg-petal-layer {
+  perspective: 520px;
+}
+.avg-petal {
+  position: absolute;
+  top: -28px;
+  width: 16px;
+  height: 12px;
+  border-radius: 0;
+  background: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: petalGlide3D var(--dur, 11s) ease-in-out var(--delay, 0s) infinite;
+}
+.avg-petal.is-far {
+  filter: blur(1.2px);
+  opacity: 0.42;
+}
+.avg-petal.is-near {
+  filter: drop-shadow(0 2px 5px rgba(255, 244, 224, 0.4));
+}
+@keyframes petalGlide3D {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  12% { opacity: 0.62; }
+  35% {
+    transform: translate3d(calc(var(--sway, 36px) * -0.7), 34vh, 0) rotateX(115deg) rotateY(70deg) rotateZ(45deg);
+  }
+  68% {
+    opacity: 0.54;
+    transform: translate3d(calc(var(--sway, 36px) * 0.55), 68vh, 0) rotateX(240deg) rotateY(155deg) rotateZ(120deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--sway, 36px) * -0.4), 104vh, 0) rotateX(360deg) rotateY(240deg) rotateZ(195deg);
+  }
+}
+
+.avg-mote {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: moteFloat var(--dur, 12s) ease-in-out var(--delay, 0s) infinite;
+}
+.avg-mote.is-gold {
+  background: radial-gradient(circle, rgba(255, 248, 210, 0.92) 0%, rgba(250, 214, 128, 0.35) 55%, transparent 100%);
+  box-shadow: 0 0 8px rgba(252, 222, 146, 0.65);
+}
+.avg-mote.is-aqua {
+  background: radial-gradient(circle, rgba(232, 255, 250, 0.92) 0%, rgba(154, 236, 224, 0.35) 55%, transparent 100%);
+  box-shadow: 0 0 8px rgba(164, 238, 226, 0.6);
+}
+@keyframes moteFloat {
+  0%   { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.7); }
+  25%  { opacity: 0.68; }
+  75%  { opacity: 0.52; }
+  100% { opacity: 0; transform: translate3d(16px, -68px, 0) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avg-petal, .avg-mote { display: none; }
+}
+
+
+/* ================= v43 国风细节精修：鎏金回字纹货郎框 + 海棠候客横签 + 飞檐祥云底托 ================= */
+
+/* 1. 货郎对话框：图四鎏金回字纹花窗框 + 清透玉白微霜底（高对比度深墨青字 + 内嵌古风银两签） */
+.intel-huiwen-box {
+  position: relative;
+  width: 100%;
+  padding: 13px 16px 11px;
+  filter: drop-shadow(0 6px 16px rgba(18, 42, 46, 0.22));
+}
+.huiwen-frame-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.intel-speech-line {
+  position: relative;
+  z-index: 1;
+  font-size: 0.85rem;
+  line-height: 1.62;
+  color: #1c3130;
+  text-shadow: none;
+  margin-bottom: 8px;
+}
+.intel-silver-bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(207, 160, 82, 0.36);
+}
+.silver-coin-mark {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid #b88028;
+  position: relative;
+  flex: 0 0 12px;
+}
+.silver-coin-mark::after {
+  content: '';
+  position: absolute;
+  inset: 2.5px;
+  border: 1px solid #b88028;
+}
+.intel-silver-pill {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #8c520a;
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+/* 2. 点灯界面前厅有客提示：方案1「海棠内凹细横签 + 左端迷你朱砂圆印候」 */
+.lantern-note-box {
+  position: relative;
+  max-width: 440px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 4px 12px;
+}
+.lantern-warn-svg,
+.lantern-warn-seal {
+  display: none;
+}
+.lantern-note-box.is-warning {
+  padding: 10px 18px 10px 14px;
+  filter: drop-shadow(0 6px 16px rgba(20, 42, 46, 0.24));
+}
+.lantern-note-box.is-warning .lantern-warn-svg {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.lantern-note-box.is-warning .lantern-warn-seal {
+  display: inline-flex;
+  position: relative;
+  z-index: 1;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 50%;
+  background: rgba(176, 54, 42, 0.92);
+  color: #fff9f0;
+  border: 1px solid rgba(255, 240, 224, 0.88);
+  font-family: var(--font-brush);
+  font-size: 0.78rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(136, 36, 26, 0.28);
+}
+.lantern-note-box.is-warning .diegetic-header-note.is-warning {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+  background: none;
+  color: #1e3332;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.48;
+  text-align: left;
+  text-shadow: none;
+}
+.warn-guest-em {
+  color: #a83226;
+  font-weight: 800;
+}
+
+/* 3. 底部「归返御街」按钮：图二飞檐宫灯 + 图三叠层祥云暖金细线底托 */
+.diegetic-ghost-close {
+  border-bottom: none;
+  padding: 6px 14px 4px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: #f6ebd4;
+}
+.ghost-close-text {
+  font-size: 0.88rem;
+  letter-spacing: 2.5px;
+  line-height: 1.3;
+}
+.ghost-ornament-svg {
+  display: block;
+  width: min(248px, 68vw);
+  height: auto;
+  color: #f0cf8c;
+  opacity: 0.82;
+  filter: drop-shadow(0 1px 4px rgba(18, 28, 30, 0.55));
+  transition: opacity 150ms ease, color 150ms ease, transform 150ms ease;
+}
+.diegetic-ghost-close:hover .ghost-ornament-svg,
+.diegetic-ghost-close:focus-visible .ghost-ornament-svg {
+  color: #ffe4a4;
+  opacity: 1;
+  transform: scaleX(1.03);
+}
+
+
+/* ================= v47 P0修复：诗笺轻量化与诗眼选项平笔琉璃对齐 ================= */
+.avg-poem-card,
+.avg-poem-eye-quote {
+  background: linear-gradient(180deg, rgba(253, 251, 246, 0.92) 0%, rgba(242, 250, 247, 0.86) 100%);
+  border: 1px solid rgba(196, 162, 102, 0.56);
+  border-left: 3px solid var(--song-celadon);
+  border-radius: 4px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 18px rgba(18, 42, 46, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+  padding: 9px 14px;
+}
+.avg-poem-card {
+  border-left-color: var(--cinnabar);
+}
+.avg-poem-card .poem-lines {
+  font-size: 1.48rem;
+  line-height: 1.28;
+  color: #182e2e;
+}
+.avg-poem-eye-quote .poem-eye-line {
+  font-size: 1.2rem;
+  color: #182e2e;
+}
+.avg-choice-btn.poem-eye {
+  border-left: none;
+}
+.avg-choice-btn.poem-eye .choice-row-1 {
+  align-items: center;
+}
+.avg-choice-btn.poem-eye .choice-row-1 strong {
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+.avg-choice-btn.poem-eye .choice-tag {
+  background: rgba(232, 248, 242, 0.88);
+  border: 1px solid rgba(63, 124, 112, 0.35);
+  color: #1c584a;
+}
+
+
+/* ================= v48 P2优化：卷轴正文可读性微调 + 仅可滚动时显示底部渐隐 ================= */
+.sheet-review {
+  font-size: 0.86rem;
+  line-height: 1.68;
+}
+.codex-intro {
+  font-size: 0.82rem;
+  line-height: 1.62;
+}
+.codex-quote {
+  font-size: 0.82rem;
+  line-height: 1.58;
+}
+.codex-note {
+  font-size: 0.8125rem;
+  line-height: 1.62;
+}
+.scroll-rod-frame .book-sheet::after {
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.scroll-rod-frame .book-sheet.is-scrollable::after {
+  opacity: 1;
+}
