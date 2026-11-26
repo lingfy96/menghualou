@@ -6,6 +6,9 @@ import {
   showToast, unlockCodex, showSettlementBanner, checkGameOver, setRumor
 } from './ui.js';
 
+const pillHot = document.getElementById('pill-hot-dish');
+const pillMat = document.getElementById('pill-fine-mat');
+
 // v35 一景一器：檐下三灯 & 青荷折扇 专属DOM
 const lanternOverlay = document.getElementById('lantern-stage-overlay');
 const lanternBackdrop = document.getElementById('lantern-stage-backdrop');
@@ -254,6 +257,18 @@ const OUTDOOR_ENCOUNTERS = [
 let encounterCursor = 0;
 
 export function renderOutdoorStatus() {
+  if (pillHot) {
+    pillHot.textContent = state.hotDish
+      ? `热销${BOARD_RECIPES[state.hotDish].name}2×`
+      : '热销未打听';
+    pillHot.classList.toggle('is-active', Boolean(state.hotDish));
+  }
+  if (pillMat) {
+    pillMat.textContent = state.fineMaterial
+      ? '鲜料已备'
+      : '鲜料未采买';
+    pillMat.classList.toggle('is-active', Boolean(state.fineMaterial));
+  }
   const wbFine = document.getElementById('wb-fine-mat');
   const wbHot = document.getElementById('wb-hot-dish');
   if (wbFine) wbFine.textContent = state.fineMaterial ? '已备好鲜料' : '尚未采买';

@@ -22,6 +22,17 @@
 }
 
 .hud-left { display: flex; align-items: center; gap: 7px; min-width: 0; flex-shrink: 0; }
+.hud-brand-seal {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border: 1.5px solid var(--cinnabar);
+  border-radius: 3px;
+  background: rgba(248, 244, 234, 0.85);
+  color: var(--cinnabar);
+  font-family: var(--font-brush);
+  font-size: 1rem;
+  line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+}
 .hud-time-wrap { display: flex; flex-direction: column; line-height: 1.15; }
 .day-text { font-family: var(--font-serif); font-size: 0.85rem; font-weight: 700; color: var(--ink-text); white-space: nowrap; }
 .combo-pill { display: none; font-size: 0.75rem; font-weight: 700; color: var(--mint-deep); white-space: nowrap; }
@@ -61,10 +72,26 @@
 .hud-codex-pill:hover { border-color: var(--mint-deep); }
 .hud-codex-pill:active { transform: scale(0.94); }
 
-.hud-codex-pill::after, .riddle-hint-btn::after, .pause-resume-btn::after {
+.round-ink-btn {
+  position: relative; overflow: visible;
+  width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+  border: 1px solid rgba(168, 152, 126, 0.55); background: rgba(246, 242, 232, 0.9);
+  color: var(--ink-muted); display: inline-flex; align-items: center; justify-content: center;
+  transition: transform 100ms ease, opacity 120ms ease, border-color 140ms ease;
+}
+.round-ink-btn:hover { border-color: var(--ink-stroke); color: var(--ink-text); }
+.round-ink-btn:active { transform: scale(0.92); }
+.round-ink-btn::after, .hud-codex-pill::after, .riddle-hint-btn::after, .pause-resume-btn::after {
   content: ''; position: absolute; top: 50%; left: 50%;
   min-width: 44px; min-height: 44px; width: 100%; height: 100%;
   transform: translate(-50%, -50%);
+}
+.round-ink-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.round-ink-btn.muted { color: var(--cinnabar); border-color: rgba(168, 50, 38, 0.45); }
+
+/* 手机窄屏自动隐藏“电脑/手机视图切换”按钮，节省顶栏空间 */
+@media (max-width: 768px) {
+  #btn-layout-mode { display: none; }
 }
 @media (max-width: 390px) {
   .top-hud { padding-left: 8px; padding-right: 8px; gap: 6px; }
@@ -109,17 +136,57 @@
 .counter-hall-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 55% center; }
 .counter-warm-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(250, 248, 242, 0.04) 0%, transparent 56%, rgba(244, 239, 228, 0.5) 100%); pointer-events: none; }
 
+/* v28 #2 窗边次级入口：窗光引路（柔光箭头，属于画境光影而非悬浮招牌） */
 .window-outing-tag {
+  position: absolute; right: 10px; top: 16%; z-index: 9;
   appearance: none; cursor: pointer;
   border: none; background: transparent; padding: 0;
+  width: 68px; height: 68px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border-radius: 50%;
+  color: rgba(92, 70, 44, 0.88);
   transition: transform 120ms ease;
 }
+.app-frame.desktop-mode .window-outing-tag { right: 32px; top: 18%; }
 .window-outing-tag::after {
   content: ''; position: absolute; top: 50%; left: 50%;
   min-width: 44px; min-height: 44px; width: 100%; height: 100%;
   transform: translate(-50%, -50%);
 }
+.outing-glow {
+  position: absolute; inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 238, 196, 0.72) 0%, rgba(255, 238, 196, 0.26) 52%, rgba(255, 238, 196, 0) 78%);
+  animation: outingGlow 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.outing-arrow {
+  position: relative; width: 34px; height: 34px;
+  filter: drop-shadow(0 1px 3px rgba(255, 248, 226, 0.9));
+  animation: outingNudge 3.2s ease-in-out infinite;
+}
+.outing-word {
+  position: relative; margin-top: 1px;
+  font-family: var(--font-brush);
+  font-size: 0.75rem; letter-spacing: 2px;
+  color: rgba(92, 70, 44, 0.92);
+  text-shadow: 0 1px 4px rgba(255, 246, 224, 0.95);
+}
+@keyframes outingGlow {
+  0%, 100% { opacity: 0.55; transform: scale(0.94); }
+  50%      { opacity: 0.95; transform: scale(1.06); }
+}
+@keyframes outingNudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(3px); }
+}
+.window-outing-tag:hover .outing-glow { opacity: 1; }
 .window-outing-tag:active { transform: scale(0.94); }
+@media (prefers-reduced-motion: reduce) {
+  .outing-glow, .outing-arrow { animation: none; }
+  .outing-glow { opacity: 0.8; }
+}
 
 /* 上半区：纯粹展示客官立绘，绝无任何气泡遮脸 */
 .guest-face-stage {
@@ -128,7 +195,17 @@
   overflow: visible;
 }
 
-
+.waiting-guest-hint {
+  position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); text-align: center;
+  padding: 14px 20px; border-radius: 3px; width: min(276px, 76%);
+  transition: opacity 260ms ease;
+}
+.waiting-guest-hint.hidden { opacity: 0; pointer-events: none; }
+.waiting-seal-mark {
+  display: inline-block; padding: 1px 9px; margin-bottom: 6px; border-radius: 2px;
+  border: 1px solid rgba(154, 140, 118, 0.65); color: var(--ink-muted); font-family: var(--font-brush); font-size: 0.96rem;
+}
+.waiting-guest-hint p { font-size: 0.8rem; color: var(--ink-muted); line-height: 1.55; }
 
 .guest-actor {
   position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%) translateY(14px) scale(0.97);
@@ -199,7 +276,7 @@
 }
 .app-frame.desktop-mode .settlement-panel { top: 14px; width: min(400px, 46%); }
 .settlement-panel.visible {
-  opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: none;
+  opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; cursor: pointer;
 }
 .settlement-head {
   display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
@@ -485,13 +562,29 @@
 
 .guest-profile-btn {
   position: absolute;
+  left: 10px;
+  top: 46px;
   z-index: 11;
   appearance: none;
   cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(154, 140, 118, 0.75);
+  background: rgba(248, 244, 234, 0.92);
+  color: var(--ink-text);
+  font-size: 0;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: -1px 4px 10px rgba(48, 39, 30, 0.16);
+}
+.guest-profile-btn svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 .guest-profile-btn:active { transform: scale(0.93); }
 
@@ -532,7 +625,23 @@
 .hud-settings-menu em { font-style: normal; font-size: 0.75rem; color: var(--ink-muted); font-weight: 700; }
 
 /* HUD 数值风险色与正向反馈色 */
-
+.stat-item.is-danger strong {
+  color: #A32D2D;
+}
+.stat-item.is-danger::before {
+  content: '危';
+  position: absolute;
+  top: -7px;
+  right: -11px;
+  padding: 0 2.5px;
+  border-radius: 2px;
+  background: #A32D2D;
+  color: #fffaf2;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+  pointer-events: none;
+}
 .stat-item.is-critical {
   animation: statCriticalPulse 1.5s ease-in-out infinite;
 }

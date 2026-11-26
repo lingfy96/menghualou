@@ -16,55 +16,33 @@
 </head>
 <body>
   <div class="app-frame" id="app-frame">
-    <!-- 一、平笔藏色动态开场：倾奁化瀑 → 太白诗砌楼柳 → 海棠花窗·窗中梦华 -->
+    <!-- 一、水墨动态开场动画 + 竖排墨签入口 -->
     <section class="opening-screen" id="opening-screen" aria-label="开场序幕">
-      <!-- 幕一：倾奁化瀑（平笔藏色棋奁水瀑底图） -->
       <div class="opening-slide active" id="opening-slide-0">
-        <img src="./assets/ui/opening_waterfall_gouache.jpg" alt="青釉棋奁倾泻化作诗酒光瀑" class="opening-bg ken-burns-1" />
+        <img src="./assets/bg/opening_street.jpg" alt="汴梁灯火长街" class="opening-bg ken-burns-1" />
       </div>
-      <!-- 幕二：太白诗砌楼柳（高明度宣白青雾底，承托高密度纯文字楼影与垂柳） -->
-      <div class="opening-slide opening-poetry-stage" id="opening-slide-1"></div>
-      <!-- 幕三：海棠花窗定格（暖杏木海棠花窗 + 扇面窗棂） -->
-      <div class="opening-slide" id="opening-slide-2">
-        <img src="./assets/ui/opening_window_gouache.jpg" alt="宋韵海棠花窗与窗外梦华楼影" class="opening-bg opening-window-bg" />
+      <div class="opening-slide" id="opening-slide-1">
+        <img src="./assets/bg/opening_tavern.jpg" alt="梦华楼暮色外景" class="opening-bg ken-burns-2" />
       </div>
-
-      <!-- 实时 Canvas 层：棋子洒出液化水瀑 / 高密度李白诗句楼柳与双燕 / 窗畔流光微尘 -->
       <canvas class="opening-particles" id="opening-particles"></canvas>
-
-      <!-- 跳过序幕 -->
+      <div class="opening-vignette"></div>
       <button type="button" class="seal-btn opening-skip-btn" id="btn-skip-opening">跳过序幕</button>
-
-      <!-- 幕一/幕二底部轻雅诗签字幕 -->
-      <div class="opening-caption-box" id="opening-caption-box">
-        <div class="opening-tag" id="opening-tag">卷首 · 倾奁化瀑</div>
+      <div class="opening-caption-box">
+        <div class="opening-tag" id="opening-tag">卷首 · 汴梁夜色</div>
         <p class="opening-text" id="opening-text"></p>
-        <div class="opening-tap-hint" id="opening-tap-hint">轻触加速 ▾</div>
+        <div class="opening-tap-hint" id="opening-tap-hint">轻触补全全文</div>
       </div>
-
-      <!-- 幕三终幕：海棠花窗中轴「窗中字」竖排梦华楼 + 窗下扯帘迎客 -->
       <div class="opening-title-cta" id="opening-title-cta">
-        <div class="window-pane-title-zone">
-          <div class="cta-seals">
-            <span class="paper-seal">东京梦华录</span>
-            <span class="paper-seal">文学与商道</span>
-          </div>
-          <div class="window-title-lockup">
-            <h1 class="cta-title">梦华楼</h1>
-            <p class="cta-sub">诗酒手作 · 汴梁商道</p>
-          </div>
+        <div class="cta-seals">
+          <span class="paper-seal">东京梦华录</span>
+          <span class="paper-seal">文学与商道</span>
         </div>
-        <div class="window-bottom-actions">
-          <button type="button" class="curtain-start-btn" id="btn-start-game">
-            <span class="curtain-btn-text">扯帘迎客</span>
-          </button>
-          <button type="button" class="cta-replay-btn" id="btn-replay-opening">重温序幕</button>
-        </div>
+        <h1 class="cta-title">梦华楼</h1>
+        <p class="cta-sub">诗酒手作 · 汴梁商道</p>
+        <p class="cta-era">大宋宣和年间，汴梁御街。梦华楼壁上有前朝太白题墨，百年未褪。</p>
+        <button type="button" class="vertical-ink-btn cta-start-btn" id="btn-start-game">扯帘迎客</button>
+        <button type="button" class="cta-replay-btn" id="btn-replay-opening">重温序幕</button>
       </div>
-
-      <!-- 扯帘入店半透纱帘转场 -->
-      <div class="opening-curtain opening-curtain-left" id="opening-curtain-left" aria-hidden="true"></div>
-      <div class="opening-curtain opening-curtain-right" id="opening-curtain-right" aria-hidden="true"></div>
     </section>
 
     <!-- 二、主游戏壳 -->
@@ -341,6 +319,9 @@
             </span>
           </button>
 
+          <!-- 仅首次进入显示的一次性淡字引导（保留DOM以兼容main.js） -->
+          <div class="outdoor-first-hint" id="outdoor-first-hint" aria-live="polite"></div>
+
           <!-- v38【随身层】暖蜜珀朱磦藏色线装手账 + 极轻玉白微霜小签（冷暖撞色告别融色与黑胶囊） -->
           <div class="outdoor-memo-dock" id="outdoor-workbench">
             <button type="button" class="memo-book-fab" id="btn-workbench" aria-label="展开今夜备忘手账" aria-expanded="false" aria-controls="workbench-panel">
@@ -353,6 +334,9 @@
                 </span>
               </span>
             </button>
+            <!-- 隐藏兼容节点，保留供旧状态同步不报错 -->
+            <span id="pill-fine-mat" hidden>鲜料未采买</span>
+            <span id="pill-hot-dish" hidden>热销未打听</span>
           </div>
         </section>
       </div>

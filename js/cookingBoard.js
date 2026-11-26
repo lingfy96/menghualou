@@ -12,6 +12,7 @@ const semanticWrap = document.getElementById('board-semantic-steps');
 const tipBubble = document.getElementById('board-tip-bubble');
 const btnBoardHelp = document.getElementById('btn-board-help');
 const btnFinish = document.getElementById('btn-finish-dish');
+let tipFadeTimer = null;
 
 const loadedImgs = {};
 function preloadImg(key, src) {

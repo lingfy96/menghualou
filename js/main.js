@@ -25,7 +25,7 @@ function setDesktopMode(isDesktop) {
     dom.menuLayoutState.textContent = isDesktop ? '宽屏' : '竖屏';
   }
 }
-setDesktopMode(false);
+setDesktopMode(window.innerWidth >= 820);
 
 function inviteNextGuest(forceType = null) {
   const extraPatience = state.upgrades.gold_sign * 8;
@@ -484,10 +484,24 @@ const btnBoardBackBottom = document.getElementById('btn-board-back-bottom');
 if (btnBoardBackBottom) btnBoardBackBottom.addEventListener('click', exitBoard);
 
 // 门外御街交互
+let outdoorHintTimer = null;
+function maybeShowOutdoorFirstHint() {
+  try {
+    if (localStorage.getItem('mhl_outdoor_hint_seen')) return;
+    localStorage.setItem('mhl_outdoor_hint_seen', '1');
+  } catch (_) {}
+  const el = document.getElementById('outdoor-first-hint');
+  if (!el) return;
+  el.classList.add('visible');
+  clearTimeout(outdoorHintTimer);
+  outdoorHintTimer = setTimeout(() => el.classList.remove('visible'), 3000);
+}
+
 dom.btnGoOutdoor.addEventListener('click', () => {
   renderOutdoorStatus();
   switchView('outdoor');
   renderHUD();
+  maybeShowOutdoorFirstHint();
 });
 const handleReturnFromOutdoor = () => {
   switchView('counter');
@@ -631,7 +645,7 @@ if (dom.btnResumeBanner) {
 dom.btnPlayAgain.addEventListener('click', () => { SoundFX.serveOk(); startNewRun(); });
 
 dom.btnDemoCook.addEventListener('click', () => { closeCodexModal(); if (!state.currentGuest) showToast('练习模式：当前无候座客官，可先体验桂花糕手作', 'gold'); openBoardFor('osmanthus_cake'); });
-dom.btnDemoOutdoor.addEventListener('click', () => { closeCodexModal(); renderOutdoorStatus(); switchView('outdoor'); });
+dom.btnDemoOutdoor.addEventListener('click', () => { closeCodexModal(); renderOutdoorStatus(); switchView('outdoor'); maybeShowOutdoorFirstHint(); });
 dom.btnDemoCodex.addEventListener('click', () => { for (const item of CODEX_ENTRIES) state.unlockedCodex.add(item.id); SoundFX.miracle(); openCodexModal(); });
 dom.btnDemoLibai.addEventListener('click', () => { closeCodexModal(); triggerLibaiStory(); });
 dom.btnDemoWife.addEventListener('click', () => { closeCodexModal(); triggerWifeStory(); });

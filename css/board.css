@@ -420,9 +420,6 @@
   border-color: transparent;
   background: transparent;
   box-shadow: none;
-  animation: none;
-}
-.board-prop-btn.highlight img {
   animation: propGentleFloat 2.1s ease-in-out infinite;
 }
 .board-prop-btn.highlight::before {
@@ -467,7 +464,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .board-prop-btn.highlight img,
+  .board-prop-btn.highlight,
   .board-prop-btn.highlight::before,
   .board-serve-seal.ready {
     animation: none;

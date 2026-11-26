@@ -7,7 +7,13 @@ export const dom = {
   counterView: document.getElementById('counter-view'),
   boardView: document.getElementById('board-view'),
   outdoorView: document.getElementById('outdoor-view'),
+  outdoorViewport: document.getElementById('outdoor-scene-viewport'),
+  outdoorExploreHint: document.getElementById('outdoor-explore-hint'),
   btnGoOutdoor: document.getElementById('btn-go-outdoor'),
+  btnOutdoorBack: document.getElementById('btn-outdoor-back'),
+  btnOutEncounter: document.getElementById('btn-out-encounter'),
+  btnOutIntel: document.getElementById('btn-out-intel'),
+  btnOutLantern: document.getElementById('btn-out-lantern'),
   btnDemoOutdoor: document.getElementById('btn-demo-outdoor'),
   statDay: document.getElementById('stat-day'),
   statSilver: document.getElementById('stat-silver'),
@@ -17,6 +23,7 @@ export const dom = {
   popRep: document.getElementById('pop-rep'),
   popWenxin: document.getElementById('pop-wenxin'),
   tallyCounterText: document.getElementById('tally-counter-text'),
+  tallyOutdoorText: document.getElementById('tally-outdoor-text'),
   settlementPanel: document.getElementById('settlement-panel'),
   settlementSeal: document.getElementById('settlement-seal'),
   settlementTitle: document.getElementById('settlement-title'),
@@ -39,6 +46,7 @@ export const dom = {
   miracleTimer: document.getElementById('miracle-timer'),
   journalToast: document.getElementById('journal-toast'),
   // 前厅面对面元素
+  waitingHint: document.getElementById('waiting-guest-hint'),
   guestActor: document.getElementById('guest-actor'),
   guestPortrait: document.getElementById('guest-portrait-img'),
   orderBubble: document.getElementById('order-bubble'),
@@ -63,6 +71,7 @@ export const dom = {
   btnRiddleHint: document.getElementById('btn-riddle-hint'),
   comboPill: document.getElementById('combo-pill'),
   btnServeDish: document.getElementById('btn-serve-dish'),
+  btnBackCounter: document.getElementById('btn-back-counter'),
   // AVG
   avgOverlay: document.getElementById('avg-overlay'),
   avgBackdrop: document.getElementById('avg-backdrop'),
@@ -122,6 +131,7 @@ export const dom = {
   profileEncounterCount: document.getElementById('profile-encounter-count'),
   profileRows: document.getElementById('profile-rows'),
   ledgerNarrative: document.getElementById('ledger-narrative'),
+  outdoorRumorLine: document.getElementById('outdoor-rumor-line'),
   rumorLaneA: document.getElementById('rumor-lane-a'),
   rumorLaneB: document.getElementById('rumor-lane-b'),
   outdoorWorkbench: document.getElementById('outdoor-workbench'),
@@ -143,15 +153,26 @@ const ALL_PORTRAITS = [
   './assets/portraits/libai.png',
   './assets/portraits/libai_face.png',
   './assets/portraits/wife.png',
+  './assets/portraits/peddler.png',
   './assets/portraits/peddler_v2.png',
+  './assets/ui/lantern_panel.png',
   './assets/ui/lantern_celadon.png',
   './assets/ui/lantern_coral.png',
   './assets/ui/lantern_amber.png',
+  './assets/ui/torn_paper_card.png',
+  './assets/ui/ink_gold_stroke.png',
   './assets/ui/lotus_fan_deco.png',
   './assets/ui/boat_plum_deco.png',
+  './assets/ui/brush_dialogue_wash.png',
+  './assets/ui/brush_choice_celadon.png',
+  './assets/ui/brush_nameplate_jade.png',
+  './assets/ui/memo_book_amber.png',
   './assets/ui/brush_cta_coral.png',
   './assets/ui/cloud_nav_guide.png',
   './assets/ui/memo_book_amber_v2.png',
+  './assets/ui/prism_dialogue_stroke.png',
+  './assets/ui/prism_choice_stroke.png',
+  './assets/ui/prism_nameplate_stroke.png',
   './assets/ui/silk_dialogue_stroke.png',
   './assets/ui/silk_choice_stroke.png',
   './assets/ui/silk_nameplate_stroke.png'
@@ -240,7 +261,7 @@ function closeModalWithMotion(el) {
 // 全局按钮水墨晕染涟漪动效
 document.addEventListener('pointerdown', (e) => {
   const btn = e.target.closest('button');
-  if (!btn || btn.disabled || btn.classList.contains('board-prop-btn') || btn.classList.contains('art-hotspot')) return;
+  if (!btn || btn.disabled) return;
   const pos = getComputedStyle(btn).position;
   if (pos === 'static') return;
   const rect = btn.getBoundingClientRect();
@@ -391,6 +412,7 @@ export function renderCounterGuest() {
   });
 
   if (!g) {
+    if (dom.waitingHint) dom.waitingHint.classList.remove('hidden');
     if (dom.btnGoOutdoor) dom.btnGoOutdoor.classList.add('is-inviting');
     if (dom.btnGuestProfile) dom.btnGuestProfile.style.display = 'none';
     dom.guestActor.classList.remove('visible');
@@ -410,6 +432,7 @@ export function renderCounterGuest() {
     return;
   }
 
+  if (dom.waitingHint) dom.waitingHint.classList.add('hidden');
   if (dom.btnGoOutdoor) dom.btnGoOutdoor.classList.remove('is-inviting');
   if (dom.btnGuestProfile) dom.btnGuestProfile.style.display = 'inline-flex';
   dom.guestActor.classList.add('visible');
@@ -523,6 +546,10 @@ export function renderHUD() {
 
   const tallyStr = `今夜 +${state.dayEarnedSilver}两 · ${state.dayServedCount}位`;
   if (dom.tallyCounterText) dom.tallyCounterText.textContent = tallyStr;
+  if (dom.tallyOutdoorText) {
+    dom.tallyOutdoorText.textContent = tallyStr;
+    dom.tallyOutdoorText.classList.toggle('is-zero', state.dayEarnedSilver === 0 && state.dayServedCount === 0);
+  }
 
   if (state.comboCount >= 2) {
     dom.comboPill.classList.add('active');
